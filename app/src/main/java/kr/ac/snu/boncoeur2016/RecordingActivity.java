@@ -63,7 +63,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        recordingThread.startAcquisition();
+        recordingThread.startAcquisition(position);
 //        actionBar.setHomeButtonEnabled(true);
     }
 
@@ -150,7 +150,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onResume() {
 
-        recordingThread.startAcquisition();
+        recordingThread.startAcquisition(position);
         super.onResume();
     }
 }

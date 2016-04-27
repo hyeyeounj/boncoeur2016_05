@@ -37,6 +37,8 @@ public class RecordingThread {
     private boolean mShouldStop;
     private AudioDataReceivedListener mListener;
     private Thread mThread;
+    String position;
+
     public RecordingThread(Context context, AudioDataReceivedListener listener) {
         mListener = listener;
         this.context = context;
@@ -62,9 +64,11 @@ public class RecordingThread {
         mShouldStop = true;
     }
 
-    public void startAcquisition() {
+    public void startAcquisition(String position) {
         if (mThread != null)
             return;
+
+        this.position = position;
 
         mShouldContinue = true;
         mThread = new Thread(new Runnable() {
@@ -82,7 +86,16 @@ public class RecordingThread {
 
         Dao dao = new Dao(context);
         RecordItem record = dao.getRcordById(dao.getRecentId());
-        dao.updateData1(filePath, record.getName(), dao.getRecentId());
+
+        if(position.equals(Define.POS_TAG_A)){
+            dao.updateData1(filePath, record.getName(), dao.getRecentId());
+        }else if(position.equals(Define.POS_TAG_P)){
+            dao.updateData2(filePath, record.getName(), dao.getRecentId());
+        }else if(position.equals(Define.POS_TAG_T)){
+            dao.updateData3(filePath, record.getName(), dao.getRecentId());
+        }else if(position.equals(Define.POS_TAG_M)){
+            dao.updateData4(filePath, record.getName(), dao.getRecentId());
+        }
         Log.d("test", "recentID!!!!!!!!!! "+ dao.getRecentId() + record.getName() + filePath);
         mShouldContinue = false;
         mThread = null;
@@ -131,7 +144,7 @@ public class RecordingThread {
         record.startRecording();
 
         timestamp = new SimpleDateFormat("yyyyMMddHHmmss");
-        filePath = Define.RECORDED_FILEPATH + "_" + timestamp.format(new Date()).toString() + "REC.mp4";
+        filePath = Define.RECORDED_FILEPATH + position + "_" + timestamp.format(new Date()).toString() + "REC.mp4";
         //사용할 수 없는 파일 형식 ;; 확인
 
 /*        BufferedOutputStream os = null;
