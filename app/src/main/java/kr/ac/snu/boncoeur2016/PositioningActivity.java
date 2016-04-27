@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -27,7 +28,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     RelativeLayout back;
     RelativeLayout container;
     TextView pos_m, pos_p, pos_a, pos_t, patient_name;
-    String name;
+    String name, position;
     int age;
 
     @Override
@@ -150,6 +151,12 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         patient_name.setText(record.getName());
         Log.d("test", "file1" + record.getRecordFile2() + ", " + record.getName() + ", " + record.getPos1() + record.getRecordFile2() + ", " + record.getPos2() + record.getRecordFile3() + ", " + record.getPos3()+ record.getRecordFile4() + ", " + record.getPos4()  );
         //selected_position = intent.getStringExtra("selectedPos");
+        Log.d("test", "1데이터가 있나" + record.getRecordFile1());
+
+        if(!record.getRecordFile1().equals("")){
+            a.setBackgroundColor(Color.parseColor("#aed581"));
+            Log.d("test", "데이터가 있나" + record.getRecordFile1());
+        }
     }
 
     @Override
@@ -211,11 +218,25 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
                 Intent intent = new Intent(PositioningActivity.this, RecordingActivity.class);
                 intent.putExtra("name", name);
                 intent.putExtra("age", age);
+                intent.putExtra("position", getPosition());
               //  startActivityForResult(intent, TARGET_NAME);
                 startActivity(intent);
         }
 
 
+    }
+
+    private String getPosition() {
+        if(pos_p.getVisibility() == View.VISIBLE){
+            return Define.POS_TAG_P;
+        }else if(pos_m.getVisibility() == View.VISIBLE){
+            return Define.POS_TAG_M;
+        }else if(pos_a.getVisibility() == View.VISIBLE){
+            return Define.POS_TAG_A;
+        }else if(pos_t.getVisibility() == View.VISIBLE){
+            return Define.POS_TAG_T;
+        }
+        return null;
     }
 
     private void checkVisibility() {
