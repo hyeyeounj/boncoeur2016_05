@@ -3,6 +3,7 @@ package kr.ac.snu.boncoeur2016;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,14 +13,16 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import kr.ac.snu.boncoeur2016.utils.CustomDragShadowBuilder;
 import kr.ac.snu.boncoeur2016.utils.Define;
 
 /**
  * Created by hyes on 2016. 3. 17..
  */
-public class PositioningActivity extends AppCompatActivity implements View.OnLongClickListener, View.OnClickListener {
+public class PositioningActivity extends AppCompatActivity implements View.OnLongClickListener, View.OnClickListener, View.OnTouchListener {
 
     ImageView t, p, a, m, record;
+    Point offset = new Point(0, 0);
     RelativeLayout back;
     RelativeLayout container;
     TextView pos_m, pos_p, pos_a, pos_t, patient_name;
@@ -40,10 +43,52 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         a = (ImageView)findViewById(R.id.pos_a);
         m = (ImageView)findViewById(R.id.pos_m);
 
+
+        ImageView[] pos = {t, p, a, m};
+        double[][] rect = {{0.2, 0.2}, {0.3, 0.3}, {0.4, 0.4}, {0.5, 0.5}};
+
+        back.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+
+            ImageView[] pos;
+            double[][] rect;
+
+            public View.OnLayoutChangeListener init(ImageView[] pos, double[][] rect) {
+
+                this.pos = pos;
+                this.rect = rect;
+                return this;
+            }
+
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+
+                int width = right - left;
+                int height = bottom - top;
+
+                for (int i = 0; i < pos.length; i++) {
+
+                    Log.i("PositioningActivity", "button size : " + getResources().getDimension(R.dimen.position_button_size));
+                    pos[i].setLeft((int) (rect[i][0] * width - getResources().getDimension(R.dimen.position_button_size) / 2));
+                    pos[i].setTop((int) (rect[i][1] * height - getResources().getDimension(R.dimen.position_button_size) / 2));
+                    pos[i].setRight((int) (rect[i][0] * width + getResources().getDimension(R.dimen.position_button_size) / 2));
+                    pos[i].setBottom((int) (rect[i][1] * height + getResources().getDimension(R.dimen.position_button_size) / 2));
+                }
+
+                Log.i("PositioningActivity", "view width : " + width);
+                Log.i("PositioningActivity", "view height : " + height);
+            }
+        }.init(pos, rect));
+
+
         t.setOnClickListener(this);
         p.setOnClickListener(this);
         a.setOnClickListener(this);
         m.setOnClickListener(this);
+
+        t.setOnTouchListener(this);
+        p.setOnTouchListener(this);
+        a.setOnTouchListener(this);
+        m.setOnTouchListener(this);
 
         t.setTag(Define.POS_TAG_T);
         p.setTag(Define.POS_TAG_P);
@@ -83,7 +128,19 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         //selected_position = intent.getStringExtra("selectedPos");
     }
 
+    @Override
+    public boolean onTouch(View view, MotionEvent event) {
 
+        switch (event.getAction()) {
+
+            case MotionEvent.ACTION_DOWN: {
+
+                offset = new Point((int) event.getX(), (int) event.getY());
+            }
+        }
+
+        return false;
+    }
 
     @Override
     public boolean onLongClick(View v) {
@@ -91,7 +148,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         ClipData.Item item = new ClipData.Item((CharSequence) v.getTag());
         ClipData dragData = new ClipData(v.getTag().toString(), mimeTypes, item);
 
-        View.DragShadowBuilder myShadow = new DragShadow(v);
+        View.DragShadowBuilder myShadow = new CustomDragShadowBuilder(v, offset);
         v.startDrag(dragData, myShadow, null, 0);
         return false;
     }
