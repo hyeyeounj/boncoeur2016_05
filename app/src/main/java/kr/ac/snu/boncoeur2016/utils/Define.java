@@ -13,4 +13,5 @@ public class Define {
 
     public static final String RECORDED_FILEPATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/BonCoeur/";
 
+    public static final int SHORT_TIME = 5000;
 }

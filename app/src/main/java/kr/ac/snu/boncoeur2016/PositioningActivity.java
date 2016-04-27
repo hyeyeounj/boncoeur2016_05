@@ -162,6 +162,14 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
 
     @Override
     public void onBackPressed() {
+        //뒤로 못가게-동일인물 db계속 쌓임;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Dao dao = new Dao(this);
+        //record다 불러와서 재표시할 부분 
 
     }
 }
