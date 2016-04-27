@@ -27,7 +27,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     RelativeLayout back;
     RelativeLayout container;
     TextView pos_m, pos_p, pos_a, pos_t, patient_name;
-    String name;
+    String name, position;
     int age;
 
     @Override
@@ -211,11 +211,25 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
                 Intent intent = new Intent(PositioningActivity.this, RecordingActivity.class);
                 intent.putExtra("name", name);
                 intent.putExtra("age", age);
+                intent.putExtra("position", getPosition());
               //  startActivityForResult(intent, TARGET_NAME);
                 startActivity(intent);
         }
 
 
+    }
+
+    private String getPosition() {
+        if(pos_p.getVisibility() == View.VISIBLE){
+            return Define.POS_TAG_P;
+        }else if(pos_m.getVisibility() == View.VISIBLE){
+            return Define.POS_TAG_M;
+        }else if(pos_a.getVisibility() == View.VISIBLE){
+            return Define.POS_TAG_A;
+        }else if(pos_t.getVisibility() == View.VISIBLE){
+            return Define.POS_TAG_T;
+        }
+        return null;
     }
 
     private void checkVisibility() {

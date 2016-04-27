@@ -21,7 +21,7 @@ import kr.ac.snu.boncoeur2016.utils.Define;
 public class RecordingActivity extends AppCompatActivity implements View.OnClickListener {
 
     Context context;
-    String name;
+    String name, position;
     int age;
     TextView record_btn, patient_info;
     Handler handler;
@@ -57,7 +57,9 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
         Intent intent = getIntent();
         name = intent.getStringExtra("name");
         age = intent.getIntExtra("age", 0);
-        patient_info.setText(name + " , " + age);
+        position = intent.getStringExtra("position");
+
+        patient_info.setText(name + " , " + age + ", position: "+position);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
