@@ -12,15 +12,11 @@ import android.media.MediaMuxer;
 import android.media.MediaRecorder;
 import android.util.Log;
 
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.concurrent.Exchanger;
 
 import kr.ac.snu.boncoeur2016.utils.Define;
 
@@ -34,7 +30,7 @@ public class RecordingThread {
     private static final int COMPRESSED_AUDIO_SAMPLE_RATE = 8000;
     SimpleDateFormat timestamp;
     Context context;
-    private String fileName = null;
+    private String filePath = null;
     private boolean mShouldContinue;
     private AudioDataReceivedListener mListener;
     private Thread mThread;
@@ -65,6 +61,10 @@ public class RecordingThread {
         if (mThread == null)
             return;
 
+        Dao dao = new Dao(context);
+        RecordItem record = dao.getRcordById(dao.getRecentId());
+       // dao.updateData1(filePath, name, id);
+        Log.d("test", "recentID!!!!!!!!!! "+ dao.getRecentId() + record.getName());
         mShouldContinue = false;
         mThread = null;
 
@@ -111,7 +111,7 @@ public class RecordingThread {
         record.startRecording();
 
         timestamp = new SimpleDateFormat("yyyyMMddHHmmss");
-        String filePath = Define.RECORDED_FILEPATH + "_" + timestamp.format(new Date()).toString() + "REC.mp4";
+        filePath = Define.RECORDED_FILEPATH + "_" + timestamp.format(new Date()).toString() + "REC.mp4";
         //사용할 수 없는 파일 형식 ;; 확인
 
 /*        BufferedOutputStream os = null;
@@ -156,6 +156,7 @@ public class RecordingThread {
             codecOutputBuffers = codec.getOutputBuffers();
 
             outBuffInfo = new MediaCodec.BufferInfo();
+
         } catch (IOException ioe) {
 
             ioe.printStackTrace();

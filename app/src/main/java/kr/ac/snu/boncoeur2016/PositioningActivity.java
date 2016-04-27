@@ -169,7 +169,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     protected void onResume() {
         super.onResume();
         Dao dao = new Dao(this);
-        //record다 불러와서 재표시할 부분 
+        //record다 불러와서 재표시할 부분
 
     }
 }
