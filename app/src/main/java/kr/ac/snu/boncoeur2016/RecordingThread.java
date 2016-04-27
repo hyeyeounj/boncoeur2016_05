@@ -32,6 +32,9 @@ public class RecordingThread {
     Context context;
     private String filePath = null;
     private boolean mShouldContinue;
+    private boolean mShouldSave;
+    private boolean mNowSaving;
+    private boolean mShouldStop;
     private AudioDataReceivedListener mListener;
     private Thread mThread;
     public RecordingThread(Context context, AudioDataReceivedListener listener) {
@@ -43,7 +46,17 @@ public class RecordingThread {
         return mThread != null;
     }
 
-    public void startRecording() {
+    public void startSave() {
+
+        mShouldSave = true;
+    }
+
+    public void stopSave() {
+
+        mShouldStop = true;
+    }
+
+    public void startAcquisition() {
         if (mThread != null)
             return;
 
@@ -66,6 +79,9 @@ public class RecordingThread {
         dao.updateData1(filePath, record.getName(), dao.getRecentId());
         Log.d("test", "recentID!!!!!!!!!! "+ dao.getRecentId() + record.getName() + filePath);
         mShouldContinue = false;
+        mShouldSave = false;
+        mNowSaving = false;
+        mShouldStop = false;
         mThread = null;
 
         //fileName = "aaa"+timestamp.format(new Date()).toString() + "REC.mp4";
@@ -84,6 +100,7 @@ public class RecordingThread {
     }
 
     private void record() {
+
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
 
         // buffer size in bytes
@@ -139,44 +156,47 @@ public class RecordingThread {
         ByteBuffer[] codecInputBuffers = null;
         ByteBuffer[] codecOutputBuffers = null;
         MediaCodec.BufferInfo outBuffInfo = null;
-        try {
-
-            mux = new MediaMuxer(filePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
-            outputFormat = MediaFormat.createAudioFormat(COMPRESSED_AUDIO_FILE_MIME_TYPE,
-                    COMPRESSED_AUDIO_SAMPLE_RATE, 1);
-            outputFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
-            outputFormat.setInteger(MediaFormat.KEY_BIT_RATE, COMPRESSED_AUDIO_FILE_BIT_RATE);
-            outputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1);
-
-            codec = MediaCodec.createEncoderByType(COMPRESSED_AUDIO_FILE_MIME_TYPE);
-            codec.configure(outputFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
-            codec.start();
-
-            codecInputBuffers = codec.getInputBuffers(); // Note: Array of buffers
-            codecOutputBuffers = codec.getOutputBuffers();
-
-            outBuffInfo = new MediaCodec.BufferInfo();
-
-        } catch (IOException ioe) {
-
-            ioe.printStackTrace();
-        }
 
         long shortsRead = 0;
         double presentationTimeUs = 0;
         long totalBytesRead = 0;
         int audioTrackIdx = 0;
 
-        while (mShouldContinue) {
-//            int read = 0;
-//            while( audioBuffer.length - read != 0 ) {
-//            int numberOfShort = record.read(audioBuffer, read, audioBuffer.length - read) ;
+        while (mShouldContinue || mNowSaving) {
+
+            if (mShouldSave) {
+
+                try {
+
+                    mux = new MediaMuxer(filePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+                    outputFormat = MediaFormat.createAudioFormat(COMPRESSED_AUDIO_FILE_MIME_TYPE,
+                            COMPRESSED_AUDIO_SAMPLE_RATE, 1);
+                    outputFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
+                    outputFormat.setInteger(MediaFormat.KEY_BIT_RATE, COMPRESSED_AUDIO_FILE_BIT_RATE);
+                    outputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1);
+
+                    codec = MediaCodec.createEncoderByType(COMPRESSED_AUDIO_FILE_MIME_TYPE);
+                    codec.configure(outputFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+                    codec.start();
+
+                    codecInputBuffers = codec.getInputBuffers(); // Note: Array of buffers
+                    codecOutputBuffers = codec.getOutputBuffers();
+
+                    outBuffInfo = new MediaCodec.BufferInfo();
+
+                } catch (IOException ioe) {
+
+                    ioe.printStackTrace();
+                }
+                mShouldSave = false;
+                mNowSaving = true;
+            }
+
             int numberOfShort = record.read(audioBuffer, 0, audioBuffer.length);
             mListener.onAudioDataReceived(Arrays.copyOfRange(audioBuffer, 0, numberOfShort));
+            Log.i("RecordingThread", "numberOfShort : " + numberOfShort);
             shortsRead += numberOfShort;
-//                read += numberOfShort;
-//            }
-            // Notify waveform
+
             if (numberOfShort != 0) {
 
                 byte bData[] = short2byte(audioBuffer, (int) numberOfShort);
@@ -185,94 +205,91 @@ public class RecordingThread {
                     if (at.getPlayState() != AudioTrack.PLAYSTATE_PLAYING)
                         at.play();
                 }
-                if (outBuffInfo != null) {
-                    int processed = 0, total = bData.length, size = 0;
-                    while (processed != total) {
+                if (mNowSaving) {
+
+                    if (outBuffInfo != null) {
+                        int processed = 0, total = bData.length, size = 0;
+                        while (processed != total) {
 
 //                        Log.i( "RecordingThread" , "total : " + processed );
-                        int ind = codec.dequeueInputBuffer(0);
+                            int ind = codec.dequeueInputBuffer(0);
 
-                        if (ind < 0 && ind != -1)
-                            Log.i("xxxxxx", ind + "");
+                            if (ind < 0 && ind != -1)
+                                Log.i("xxxxxx", ind + "");
 
-                        while (ind >= 0 && processed != total) {
+                            while (ind >= 0 && processed != total) {
 
-                            ByteBuffer dstBuf = codecInputBuffers[ind];
-                            dstBuf.clear();
-                            if (dstBuf.limit() > total - processed) {
-                                dstBuf.put(bData, processed, total - processed);
-                                size = total - processed;
-                            } else {
-
-                                dstBuf.put(bData, processed, dstBuf.limit());
-                                size = dstBuf.limit();
-                            }
-                            processed += size;
-                            codec.queueInputBuffer(ind, 0, size, (long) presentationTimeUs, 0);
-                            totalBytesRead += size;
-                            presentationTimeUs = 1000000l * (totalBytesRead / 2) / SAMPLE_RATE;
-
-                            if (processed != total)
-                                ind = codec.dequeueInputBuffer(0);
-                        }
-
-                        ind = codec.dequeueOutputBuffer(outBuffInfo, 0);
-                        if (ind < 0 && ind != -1)
-                            Log.i("xxxxxx", ind + "");
-
-                        if (ind == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                            outputFormat = codec.getOutputFormat();
-                            audioTrackIdx = mux.addTrack(outputFormat);
-                            mux.start();
-                            ind = codec.dequeueOutputBuffer(outBuffInfo, 0);
-                        }
-
-                        while (ind >= 0) {
-
-                            try {
-                                ByteBuffer encodedData = codecOutputBuffers[ind];
-                                encodedData.position(outBuffInfo.offset);
-                                encodedData.limit(outBuffInfo.offset + outBuffInfo.size);
-
-                                if ((outBuffInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0 && outBuffInfo.size != 0) {
-                                    codec.releaseOutputBuffer(ind, false);
+                                ByteBuffer dstBuf = codecInputBuffers[ind];
+                                dstBuf.clear();
+                                if (dstBuf.limit() > total - processed) {
+                                    dstBuf.put(bData, processed, total - processed);
+                                    size = total - processed;
                                 } else {
-                                    mux.writeSampleData(audioTrackIdx, codecOutputBuffers[ind], outBuffInfo);
-                                    codec.releaseOutputBuffer(ind, false);
-                                }
 
+                                    dstBuf.put(bData, processed, dstBuf.limit());
+                                    size = dstBuf.limit();
+                                }
+                                processed += size;
+                                codec.queueInputBuffer(ind, 0, size, (long) presentationTimeUs, 0);
+                                totalBytesRead += size;
+                                presentationTimeUs = 1000000l * (totalBytesRead / 2) / SAMPLE_RATE;
+
+                                if (processed != total)
+                                    ind = codec.dequeueInputBuffer(0);
+                            }
+
+                            ind = codec.dequeueOutputBuffer(outBuffInfo, 0);
+                            if (ind < 0 && ind != -1)
+                                Log.i("xxxxxx", ind + "");
+
+                            if (ind == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                                outputFormat = codec.getOutputFormat();
+                                audioTrackIdx = mux.addTrack(outputFormat);
+                                mux.start();
                                 ind = codec.dequeueOutputBuffer(outBuffInfo, 0);
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                            }
+
+                            while (ind >= 0) {
+
+                                try {
+                                    ByteBuffer encodedData = codecOutputBuffers[ind];
+                                    encodedData.position(outBuffInfo.offset);
+                                    encodedData.limit(outBuffInfo.offset + outBuffInfo.size);
+
+                                    if ((outBuffInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0 && outBuffInfo.size != 0) {
+                                        codec.releaseOutputBuffer(ind, false);
+                                    } else {
+                                        mux.writeSampleData(audioTrackIdx, codecOutputBuffers[ind], outBuffInfo);
+                                        codec.releaseOutputBuffer(ind, false);
+                                    }
+
+                                    ind = codec.dequeueOutputBuffer(outBuffInfo, 0);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     }
+                    if (mNowSaving && !mShouldContinue) {
+                        mNowSaving = false;
+                        mShouldStop = true;
+                    }
                 }
-/*                try {
-                    os.write(bData, 0, audioBuffer.length * 2);
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
+            }
+
+            if (mShouldStop) {
+
+                if (outBuffInfo != null) {
+                    codec.stop();
+                    codec.release();
+                    mux.stop();
+                    mux.release();
                 }
-                catch( Exception e ){
-                    e.printStackTrace();
-                }*/
+                mNowSaving = false;
+                mShouldStop = false;
             }
         }
 
-
-/*        try {
-            os.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
-
-        if (outBuffInfo != null) {
-            codec.stop();
-            codec.release();
-            mux.stop();
-            mux.release();
-        }
         if (at != null)
             at.stop();
         record.stop();

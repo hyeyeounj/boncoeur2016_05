@@ -24,9 +24,9 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
     String name;
     int age;
     TextView record_btn, patient_info;
+    Handler handler;
     private WaveFormView waveformView, waveformView2;
     private RecordingThread recordingThread;
-    Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +60,8 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
         patient_info.setText(name + " , " + age);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        recordingThread.startAcquisition();
 //        actionBar.setHomeButtonEnabled(true);
     }
 
@@ -78,7 +80,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
     private void startAudioRecordingSafe() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO)
                 == PackageManager.PERMISSION_GRANTED) {
-            recordingThread.startRecording();
+            recordingThread.startAcquisition();
 
             Runnable runnable = new Runnable() {
                 @Override
