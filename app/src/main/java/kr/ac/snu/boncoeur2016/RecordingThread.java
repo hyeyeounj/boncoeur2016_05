@@ -12,15 +12,11 @@ import android.media.MediaMuxer;
 import android.media.MediaRecorder;
 import android.util.Log;
 
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.concurrent.Exchanger;
 
 import kr.ac.snu.boncoeur2016.utils.Define;
 
