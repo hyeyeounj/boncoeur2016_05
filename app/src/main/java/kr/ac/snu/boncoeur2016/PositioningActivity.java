@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -150,6 +151,12 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         patient_name.setText(record.getName());
         Log.d("test", "file1" + record.getRecordFile2() + ", " + record.getName() + ", " + record.getPos1() + record.getRecordFile2() + ", " + record.getPos2() + record.getRecordFile3() + ", " + record.getPos3()+ record.getRecordFile4() + ", " + record.getPos4()  );
         //selected_position = intent.getStringExtra("selectedPos");
+        Log.d("test", "1데이터가 있나" + record.getRecordFile1());
+
+        if(!record.getRecordFile1().equals("")){
+            a.setBackgroundColor(Color.parseColor("#aed581"));
+            Log.d("test", "데이터가 있나" + record.getRecordFile1());
+        }
     }
 
     @Override
