@@ -63,7 +63,7 @@ public class RecordingThread {
 
         Dao dao = new Dao(context);
         RecordItem record = dao.getRcordById(dao.getRecentId());
-       // dao.updateData1(filePath, name, id);
+        dao.updateData1(filePath, "mmm", 74);
         Log.d("test", "recentID!!!!!!!!!! "+ dao.getRecentId() + record.getName());
         mShouldContinue = false;
         mThread = null;

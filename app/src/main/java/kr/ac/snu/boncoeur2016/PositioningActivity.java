@@ -80,6 +80,10 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         age = intent.getIntExtra("age", 0);
         patient_name.setText(name + ", " + age);
 
+        Dao dao = new Dao(this);
+        RecordItem record = dao.getRcordById(dao.getRecentId());
+        patient_name.setText(record.getName());
+        Log.d("test", "file1" + record.getRecordFile2() + ", " + record.getName() + ", " + record.getPos1() + record.getRecordFile2() + ", " + record.getPos2() + record.getRecordFile3() + ", " + record.getPos3()+ record.getRecordFile4() + ", " + record.getPos4()  );
         //selected_position = intent.getStringExtra("selectedPos");
     }
 
