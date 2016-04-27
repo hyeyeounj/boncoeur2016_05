@@ -42,8 +42,14 @@ public class RecordingThread {
         this.context = context;
     }
 
-    public boolean recording() {
-        return mThread != null;
+    public boolean isAcquisitioning() {
+
+        return mShouldContinue;
+    }
+
+    public boolean isRecording() {
+
+        return mShouldSave || mNowSaving;
     }
 
     public void startSave() {
@@ -70,7 +76,7 @@ public class RecordingThread {
         mThread.start();
     }
 
-    public void stopRecording() {
+    public void stopAcquisition() {
         if (mThread == null)
             return;
 
@@ -79,9 +85,6 @@ public class RecordingThread {
         dao.updateData1(filePath, record.getName(), dao.getRecentId());
         Log.d("test", "recentID!!!!!!!!!! "+ dao.getRecentId() + record.getName() + filePath);
         mShouldContinue = false;
-        mShouldSave = false;
-        mNowSaving = false;
-        mShouldStop = false;
         mThread = null;
 
         //fileName = "aaa"+timestamp.format(new Date()).toString() + "REC.mp4";
@@ -135,7 +138,7 @@ public class RecordingThread {
         try {
             os = new BufferedOutputStream(new FileOutputStream(filePath));
         } catch (FileNotFoundException e) {
-            Log.d("test", "File not found for recording ", e);
+            Log.d("test", "File not found for isRecording ", e);
         }*/
 
         AudioTrack at = null;
@@ -168,6 +171,7 @@ public class RecordingThread {
 
                 try {
 
+                    at.setStereoVolume(0f, 0f);
                     mux = new MediaMuxer(filePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
                     outputFormat = MediaFormat.createAudioFormat(COMPRESSED_AUDIO_FILE_MIME_TYPE,
                             COMPRESSED_AUDIO_SAMPLE_RATE, 1);
@@ -194,7 +198,7 @@ public class RecordingThread {
 
             int numberOfShort = record.read(audioBuffer, 0, audioBuffer.length);
             mListener.onAudioDataReceived(Arrays.copyOfRange(audioBuffer, 0, numberOfShort));
-            Log.i("RecordingThread", "numberOfShort : " + numberOfShort);
+//            Log.i("RecordingThread", "numberOfShort : " + numberOfShort);
             shortsRead += numberOfShort;
 
             if (numberOfShort != 0) {
@@ -279,6 +283,8 @@ public class RecordingThread {
 
             if (mShouldStop) {
 
+                if (at != null)
+                    at.setStereoVolume(1.0f, 1.0f);
                 if (outBuffInfo != null) {
                     codec.stop();
                     codec.release();
