@@ -24,9 +24,9 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
     String name;
     int age;
     TextView record_btn, patient_info;
+    Handler handler;
     private WaveFormView waveformView, waveformView2;
     private RecordingThread recordingThread;
-    Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,18 +34,18 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
         setContentView(R.layout.activity_recording);
         context = this;
 
-        patient_info = (TextView)findViewById(R.id.patient_info);
+        patient_info = (TextView) findViewById(R.id.patient_info);
 
-        record_btn = (TextView)findViewById(R.id.record_btn);
+        record_btn = (TextView) findViewById(R.id.record_btn);
         record_btn.setOnClickListener(this);
-        waveformView = (WaveFormView)findViewById(R.id.waveformView);
+        waveformView = (WaveFormView) findViewById(R.id.waveformView);
         waveformView2 = (WaveFormView) findViewById(R.id.waveformView2);
         waveformView.setPlotType(0);
         waveformView2.setPlotType(1);
         waveformView.setPlotMethod(1);
         waveformView2.setPlotMethod(0);
 
-        recordingThread =new RecordingThread(context, new AudioDataReceivedListener() {
+        recordingThread = new RecordingThread(context, new AudioDataReceivedListener() {
             @Override
             public void onAudioDataReceived(short[] data) {
 //                Log.i( "RecordingActivity", "data.length : " + data.length );
@@ -55,11 +55,13 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
         });
 
         Intent intent = getIntent();
-        name =  intent.getStringExtra("name");
+        name = intent.getStringExtra("name");
         age = intent.getIntExtra("age", 0);
         patient_info.setText(name + " , " + age);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        recordingThread.startAcquisition();
 //        actionBar.setHomeButtonEnabled(true);
     }
 
@@ -76,15 +78,20 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void startAudioRecordingSafe() {
+
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO)
                 == PackageManager.PERMISSION_GRANTED) {
-            recordingThread.startRecording();
+            recordingThread.startSave();
 
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    recordingThread.stopRecording();
-                    goToPosition();
+                    recordingThread.stopSave();
+                    record_btn.setText("RECORD");
+                    record_btn.setEnabled(true);
+                    record_btn.setFocusable(true);
+                    Log.d("test", "record stop");
+//                    goToPosition();
                 }
             };
             handler = new Handler();
@@ -104,17 +111,17 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void onClick(View v) {
 
-        switch(v.getId()){
+        switch (v.getId()) {
             case R.id.record_btn:
 
-                if (!recordingThread.recording()) {
+                if (!recordingThread.isRecording()) {
                     startAudioRecordingSafe();
                     record_btn.setText("RECORDING");
                     record_btn.setEnabled(false);
                     record_btn.setFocusable(false);
                     Log.d("test", "record start");
                 } else {
-//                    recordingThread.stopRecording();
+//                    recordingThread.stopAcquisition();
 //                    record_btn.setText("RECORD");
 //                    Log.d("test", "record stop");
                 }
@@ -127,10 +134,21 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
     public void onBackPressed() {
         super.onBackPressed();
         Log.d("test", "pause");
-        if(recordingThread.recording()){
-            recordingThread.stopRecording();
-            Log.d("test", "pause 종료");
-        }
+        recordingThread.stopAcquisition();
+        Log.d("test", "pause 종료");
     }
 
+    @Override
+    protected void onPause() {
+
+        recordingThread.stopAcquisition();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+
+        recordingThread.startAcquisition();
+        super.onResume();
+    }
 }
