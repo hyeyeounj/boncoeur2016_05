@@ -3,13 +3,25 @@
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/body"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:background="#12387b">
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/imageView"
+        android:layout_alignParentStart="false"
+        android:adjustViewBounds="false"
+        android:baselineAlignBottom="false"
+        android:cropToPadding="false"
+        android:focusable="false"
+        android:scaleType="fitCenter"
+        android:src="@drawable/body"/>
 
     <ImageView
         android:id="@+id/pos_a"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="@dimen/position_button_size"
+        android:layout_height="@dimen/position_button_size"
         android:layout_marginLeft="170dp"
         android:layout_marginTop="240dp"
         android:background="@drawable/circle"
@@ -17,24 +29,24 @@
 
     <ImageView
         android:id="@+id/pos_p"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="@dimen/position_button_size"
+        android:layout_height="@dimen/position_button_size"
         android:layout_marginLeft="210dp"
         android:layout_marginTop="240dp"
         android:background="@drawable/circle"/>
 
     <ImageView
         android:id="@+id/pos_t"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="@dimen/position_button_size"
+        android:layout_height="@dimen/position_button_size"
         android:layout_marginLeft="190dp"
         android:layout_marginTop="260dp"
         android:background="@drawable/circle" />
 
     <ImageView
         android:id="@+id/pos_m"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="@dimen/position_button_size"
+        android:layout_height="@dimen/position_button_size"
         android:layout_marginLeft="220dp"
         android:layout_marginTop="270dp"
         android:background="@drawable/circle" />
@@ -44,7 +56,7 @@
         android:id="@+id/pos_message_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#99423241"
+        android:background="#12387b"
         android:orientation="vertical"
         android:visibility="invisible"
         >
