@@ -235,17 +235,29 @@ public class Dao {
         while(cursor.moveToNext()){
 
             name = cursor.getString(1);
+            Log.d("test", "1" + name);
             date = cursor.getString(2);
+            Log.d("test", "2" + date);
             age = cursor.getInt(3);
+            Log.d("test", "3" + age);
             email = cursor.getString(4);
+            Log.d("test", "4" + email);
             recordFile1 = cursor.getString(5);
+            Log.d("test", "5" + recordFile1);
             pos1 = cursor.getString(6);
+            Log.d("test", "6" + pos1);
             recordFile2 = cursor.getString(7);
+            Log.d("test", "7" + recordFile2);
             pos2 = cursor.getString(8);
+            Log.d("test", "8" + pos2);
             recordFile3 = cursor.getString(9);
+            Log.d("test", "9" + recordFile3);
             pos3 = cursor.getString(10);
+            Log.d("test", "10" + pos3);
             recordFile4 = cursor.getString(11);
+            Log.d("test", "11" + recordFile4);
             pos4 = cursor.getString(12);
+            Log.d("test", "12" + pos4);
         }
 
         record = new RecordItem(name, date, age, email, recordFile1, pos1, recordFile2, pos2, recordFile3, pos3, recordFile4, pos4);
