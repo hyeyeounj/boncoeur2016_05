@@ -3,6 +3,7 @@ package kr.ac.snu.boncoeur2016;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -65,13 +66,32 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
                 int width = right - left;
                 int height = bottom - top;
 
+                BitmapFactory.Options o = new BitmapFactory.Options();
+                o.inJustDecodeBounds = true;
+                BitmapFactory.decodeResource(getResources(), R.drawable.body, o);
+                int imageWidth = o.outWidth;
+                int imageHeight = o.outHeight;
+                double factor = 0;
+                if (1.0 * width / imageWidth > 1.0 * height / imageHeight) {
+                    factor = (1.0 * height / imageHeight);
+                    imageWidth *= factor;
+                    imageHeight *= factor;
+                } else {
+                    factor = (1.0 * width / imageWidth);
+                    imageWidth *= factor;
+                    imageHeight *= factor;
+                }
+
+                int offsetWidth = (width - imageWidth) / 2;
+                int offsetHeight = (height - imageHeight) / 2;
+
                 for (int i = 0; i < pos.length; i++) {
 
                     Log.i("PositioningActivity", "button size : " + getResources().getDimension(R.dimen.position_button_size));
-                    pos[i].setLeft((int) (rect[i][0] * width - getResources().getDimension(R.dimen.position_button_size) / 2));
-                    pos[i].setTop((int) (rect[i][1] * height - getResources().getDimension(R.dimen.position_button_size) / 2));
-                    pos[i].setRight((int) (rect[i][0] * width + getResources().getDimension(R.dimen.position_button_size) / 2));
-                    pos[i].setBottom((int) (rect[i][1] * height + getResources().getDimension(R.dimen.position_button_size) / 2));
+                    pos[i].setLeft((int) (rect[i][0] * imageWidth - getResources().getDimension(R.dimen.position_button_size) / 2) + offsetWidth);
+                    pos[i].setTop((int) (rect[i][1] * imageHeight - getResources().getDimension(R.dimen.position_button_size) / 2) + offsetHeight);
+                    pos[i].setRight((int) (rect[i][0] * imageWidth + getResources().getDimension(R.dimen.position_button_size) / 2) + offsetWidth);
+                    pos[i].setBottom((int) (rect[i][1] * imageHeight + getResources().getDimension(R.dimen.position_button_size) / 2) + offsetHeight);
                 }
 
                 Log.i("PositioningActivity", "view width : " + width);
