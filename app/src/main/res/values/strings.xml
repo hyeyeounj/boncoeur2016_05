@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">BonCoeur2016</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="hint_email">Email Address</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_name">Name</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="login">Log In</string>
+    <string name="go_signup">New to Boncoeur?</string>
+    <string name="err_msg_name">Enter your full name</string>
+    <string name="err_msg_email">Enter valid email address</string>
+    <string name="err_msg_password">Enter the password</string>
+
+    <string name="pos_a">AORTIC</string>
+    <string name="pos_m">MITRAL</string>
+    <string name="pos_t">TRICUSPID</string>
+    <string name="pos_p">PULMONIC</string>
+
+
+    <string name="record">RECORD</string>
+
+    <string name="boncoeur">BonCoeur is designed for children with Rheumatic heart disease (RHD) especially in developing countries. BonCoeur service is intended to help making correct diagnoses without doctor\'s visit. Just record heart sounds and take pictures. Professional physicians will make a diagnosis for you in no time.</string>
+
+</resources>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/back"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/body"
+                android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/pos_a"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginLeft="170dp"
+        android:layout_marginTop="240dp"
+        android:background="@drawable/circle"
+        />
+
+    <ImageView
+        android:id="@+id/pos_p"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginLeft="210dp"
+        android:layout_marginTop="240dp"
+        android:background="@drawable/circle"/>
+
+    <ImageView
+        android:id="@+id/pos_t"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginLeft="190dp"
+        android:layout_marginTop="260dp"
+        android:background="@drawable/circle" />
+
+    <ImageView
+        android:id="@+id/pos_m"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginLeft="220dp"
+        android:layout_marginTop="270dp"
+        android:background="@drawable/circle" />
+
+
+    <RelativeLayout
+        android:id="@+id/pos_message_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99423241"
+        android:orientation="vertical"
+        android:visibility="invisible"
+        >
+
+        <TextView
+            android:id="@+id/pos_message_m"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="@string/pos_m"
+            android:textColor="@android:color/white"
+            android:textSize="16dp"
+            android:visibility="invisible"/>
+
+        <TextView
+            android:id="@+id/pos_message_p"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="@string/pos_p"
+            android:textColor="@android:color/white"
+            android:textSize="16dp"
+            android:visibility="invisible"/>
+
+        <TextView
+            android:id="@+id/pos_message_t"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="@string/pos_t"
+            android:textColor="@android:color/white"
+            android:textSize="16dp"
+            android:visibility="invisible"/>
+
+        <TextView
+            android:id="@+id/pos_message_a"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="@string/pos_a"
+            android:textColor="@android:color/white"
+            android:textSize="16dp"
+            android:visibility="invisible"/>
+
+
+        <ImageView
+            android:id="@+id/pos_record"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_below="@+id/pos_message_m"
+            android:layout_marginLeft="15dp"
+            android:src="@android:drawable/ic_media_play" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/patient_info"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="Large Text"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@android:color/white"/>
+
+</RelativeLayout>
