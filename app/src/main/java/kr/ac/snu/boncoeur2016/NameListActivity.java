@@ -1,5 +1,6 @@
 package kr.ac.snu.boncoeur2016;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +18,6 @@ import java.util.ArrayList;
  */
 public class NameListActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
-    private static final int TARGET = 1;
     private ArrayList<NameItem> nameList;
     private ListView listView;
     private TextView tv, empty;
@@ -75,14 +75,11 @@ public class NameListActivity extends AppCompatActivity implements AdapterView.O
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-//        Intent intent = new Intent(this, RecordingDataList.class);
-//
-//        intent.putExtra("Name", nameList.get(position).getName());
-//        intent.putExtra("id", nameList.get(position).getId());
-//        Log.i("test", "intent " + nameList.get(position).getId());
-//        startActivity(intent);
+        Intent intent = new Intent(this, PositioningActivity.class);
 
+        intent.putExtra("Name", nameList.get(position).getName());
+        intent.putExtra("id", nameList.get(position).getId());
+        Log.i("test", "Send List > Repositioning " + nameList.get(position).getId());
+        startActivity(intent);
     }
-
-
 }

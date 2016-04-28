@@ -46,12 +46,17 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     RecordItem recordItem;
     MediaPlayer player;
     ProgressDialog progressDialog;
+    int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_position);
         context = this;
+
+        Intent intent = getIntent();
+        id = intent.getIntExtra("id", 0);
+        Log.d("test", "onCreate() id: " + id);
 
         back = (RelativeLayout)findViewById(R.id.back);
         patient_name = (TextView)findViewById(R.id.patient_info);
@@ -63,7 +68,6 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         p = (ImageView)findViewById(R.id.pos_p);
         a = (ImageView)findViewById(R.id.pos_a);
         m = (ImageView)findViewById(R.id.pos_m);
-
 
         ImageView[] pos = {t, p, a, m};
         double[][] rect = {{0.2, 0.2}, {0.3, 0.3}, {0.4, 0.4}, {0.5, 0.5}};
@@ -242,6 +246,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
             case R.id.pos_record:
                 Intent intent = new Intent(PositioningActivity.this, RecordingActivity.class);
                 intent.putExtra("position", getPosition());
+                intent.putExtra("id", id);
                 startActivity(intent);
                 break;
             case R.id.pos_play:
@@ -418,8 +423,19 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     }
 
     private void dataCheck() {
-        recordItem = dao.getRcordById(dao.getRecentId());
-        patient_name.setText("name: " + recordItem.getName() + " (" + recordItem.getAge() + ")");
+        Log.d("test", "temp: id " + id + "recent " + dao.getRecentId());
+
+        if(dao.getRecentId() > id){
+            recordItem = dao.getRcordById(id);
+            Log.d("test", "샌드에서 오는 id: " + id);
+        }else if(dao.getRecentId() != id) {
+            recordItem = dao.getRcordById(dao.getRecentId());
+            Log.d("test", "최신 id(저장중): " + id);
+        }else if(dao.getRecentId() == id){
+            recordItem = dao.getRcordById(dao.getRecentId());
+        }
+            patient_name.setText("name: " + recordItem.getName() + " (" + recordItem.getAge() + ")");
+
         if(!recordItem.getRecordFile1().equals("")){
             changeColor(a);
             playA = true;
