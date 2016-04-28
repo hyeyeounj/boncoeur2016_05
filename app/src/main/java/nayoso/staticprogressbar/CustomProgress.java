@@ -38,13 +38,10 @@ public class CustomProgress extends TextView {
 
     private final static int SHAPE_RECTANGLE = 0;
     private final static int SHAPE_ROUNDED_RECTANGLE = 1;
-    private final static int DEFAULT_TEXT_MARGIN = 10;
 
     private ShapeDrawable progressDrawable;
-    private TextView textView;
     private int width = 0;
     private int progressColor;
-    private int progressBackgroundColor;
     private int progressShape = SHAPE_RECTANGLE;
     private double curPercentage = 0.0f;
     private double maxPercentage = 100.0f;
@@ -72,7 +69,6 @@ public class CustomProgress extends TextView {
 
         // default color
         progressColor = context.getResources().getColor(R.color.green_500);
-        progressBackgroundColor = context.getResources().getColor(R.color.white);
     }
 
     @Override
@@ -96,17 +92,14 @@ public class CustomProgress extends TextView {
      */
     private void initView() {
         Shape progressShapeDrawable = null;
-        Shape backgroundProgressShapeDrawable = null;
         switch (progressShape) {
             case SHAPE_RECTANGLE:
                 progressShapeDrawable = new RectShape();
-                backgroundProgressShapeDrawable = new RectShape();
                 break;
             case SHAPE_ROUNDED_RECTANGLE:
                 float[] outerRadius = new float[8];
                 Arrays.fill(outerRadius, cornerRadius);
                 progressShapeDrawable = new RoundRectShape(outerRadius, null, null);
-                backgroundProgressShapeDrawable = new RoundRectShape(outerRadius, null, null);
                 break;
         }
 
@@ -133,14 +126,6 @@ public class CustomProgress extends TextView {
      */
     public void setProgressColor(int color) {
         this.progressColor = color;
-    }
-
-    /**
-     * Set the background color
-     * @param color
-     */
-    public void setProgressBackgroundColor(int color) {
-        this.progressBackgroundColor = color;
     }
 
     /**
