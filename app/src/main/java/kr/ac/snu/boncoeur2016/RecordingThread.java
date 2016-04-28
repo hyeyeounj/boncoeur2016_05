@@ -10,6 +10,7 @@ import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.util.Log;
 
 import java.io.IOException;
@@ -30,6 +31,7 @@ public class RecordingThread {
     private static final int COMPRESSED_AUDIO_SAMPLE_RATE = 8000;
     SimpleDateFormat timestamp;
     Context context;
+    String position;
     private String filePath = null;
     private boolean mShouldContinue;
     private boolean mShouldSave;
@@ -37,7 +39,6 @@ public class RecordingThread {
     private boolean mShouldStop;
     private AudioDataReceivedListener mListener;
     private Thread mThread;
-    String position;
 
     public RecordingThread(Context context, AudioDataReceivedListener listener) {
         mListener = listener;
@@ -120,6 +121,7 @@ public class RecordingThread {
 
     }
 
+    //    @TargetApi( Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void record() {
 
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
@@ -190,7 +192,6 @@ public class RecordingThread {
                 try {
 
                     at.setStereoVolume(0f, 0f);
-                    mux = new MediaMuxer(filePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
                     outputFormat = MediaFormat.createAudioFormat(COMPRESSED_AUDIO_FILE_MIME_TYPE,
                             COMPRESSED_AUDIO_SAMPLE_RATE, 1);
                     outputFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
@@ -206,6 +207,11 @@ public class RecordingThread {
 
                     outBuffInfo = new MediaCodec.BufferInfo();
 
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        mux = new MediaMuxer(filePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+                    } else {
+
+                    }
                 } catch (IOException ioe) {
 
                     ioe.printStackTrace();
@@ -265,9 +271,13 @@ public class RecordingThread {
                                 Log.i("xxxxxx", ind + "");
 
                             if (ind == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                                outputFormat = codec.getOutputFormat();
-                                audioTrackIdx = mux.addTrack(outputFormat);
-                                mux.start();
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                                    outputFormat = codec.getOutputFormat();
+                                    audioTrackIdx = mux.addTrack(outputFormat);
+                                    mux.start();
+                                } else {
+
+                                }
                                 ind = codec.dequeueOutputBuffer(outBuffInfo, 0);
                             }
 
@@ -278,11 +288,15 @@ public class RecordingThread {
                                     encodedData.position(outBuffInfo.offset);
                                     encodedData.limit(outBuffInfo.offset + outBuffInfo.size);
 
-                                    if ((outBuffInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0 && outBuffInfo.size != 0) {
-                                        codec.releaseOutputBuffer(ind, false);
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                                        if ((outBuffInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0 && outBuffInfo.size != 0) {
+                                            codec.releaseOutputBuffer(ind, false);
+                                        } else {
+                                            mux.writeSampleData(audioTrackIdx, codecOutputBuffers[ind], outBuffInfo);
+                                            codec.releaseOutputBuffer(ind, false);
+                                        }
                                     } else {
-                                        mux.writeSampleData(audioTrackIdx, codecOutputBuffers[ind], outBuffInfo);
-                                        codec.releaseOutputBuffer(ind, false);
+
                                     }
 
                                     ind = codec.dequeueOutputBuffer(outBuffInfo, 0);
@@ -306,8 +320,12 @@ public class RecordingThread {
                 if (outBuffInfo != null) {
                     codec.stop();
                     codec.release();
-                    mux.stop();
-                    mux.release();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        mux.stop();
+                        mux.release();
+                    } else {
+
+                    }
                 }
                 mNowSaving = false;
                 mShouldStop = false;
