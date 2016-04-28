@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
+
 import java.io.IOException;
 
 import kr.ac.snu.boncoeur2016.utils.CustomDragShadowBuilder;
@@ -95,7 +96,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
                 BitmapFactory.decodeResource(getResources(), R.drawable.body, o);
                 int imageWidth = o.outWidth;
                 int imageHeight = o.outHeight;
-                double factor = 0;
+                double factor;
                 if (1.0 * width / imageWidth > 1.0 * height / imageHeight) {
                     factor = (1.0 * height / imageHeight);
                     imageWidth *= factor;
@@ -269,9 +270,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         }
         try {
             player.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (IllegalStateException e) {
+        } catch (IOException | IllegalStateException e) {
             e.printStackTrace();
         }
         try {
@@ -282,14 +281,14 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     }
 
     private String getDataToPlay() {
-        if(position == Define.POS_TAG_M){
-            return recordItem.getRecordFile4();
-        }else if(position == Define.POS_TAG_P){
-            return recordItem.getRecordFile2();
-        }else if(position == Define.POS_TAG_A){
+        if (position.equals(Define.POS_TAG_A)) {
             return recordItem.getRecordFile1();
-        }else if(position == Define.POS_TAG_T){
+        } else if (position.equals(Define.POS_TAG_P)) {
+            return recordItem.getRecordFile2();
+        } else if (position.equals(Define.POS_TAG_T)) {
             return recordItem.getRecordFile3();
+        } else if (position.equals(Define.POS_TAG_M)) {
+            return recordItem.getRecordFile4();
         }
         return null;
     }

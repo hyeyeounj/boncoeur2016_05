@@ -155,10 +155,11 @@ public class RecordingThread {
         record.startRecording();
 
         timestamp = new SimpleDateFormat("yyyyMMddHHmmss");
+        filePath = Define.RECORDED_FILEPATH + position + "_" + timestamp.format(new Date()) + "REC";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            filePath = Define.RECORDED_FILEPATH + position + "_" + timestamp.format(new Date()).toString() + "REC.mp4";
+            filePath += "mp4";
         } else {
-            filePath = Define.RECORDED_FILEPATH + position + "_" + timestamp.format(new Date()).toString() + "REC.aac";
+            filePath += "aac";
         }
         //사용할 수 없는 파일 형식 ;; 확인
 

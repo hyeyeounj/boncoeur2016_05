@@ -133,18 +133,13 @@ public class WaveFormView extends View {
             if (x != 0)
                 index1 = (int) (((x * 1.0f) / (width * nPlots)) * buffer.length);
             int index2 = (int) (((x + 1 * 1.0f) / (width * nPlots)) * buffer.length);
-            short[] samples;
-            if (index1 >= index2)
-//                samples = Arrays.copyOfRange(buffer, index1, index2);
-//            else {
+            if (index1 >= index2) {
 
                 if (index1 == 0)
                     index2++;
-//                    samples = Arrays.copyOfRange(buffer, index1, index2 + 1);
                 else
                     index1--;
-//                    samples = Arrays.copyOfRange(buffer, index1 - 1, index2);
-//            }
+            }
             int maxS = Short.MIN_VALUE, minS = Short.MAX_VALUE, minpos = 0, maxpos = 0;
             for (int i = index1; i < index2; i++) {
                 if (maxS < buffer[i]) {
