@@ -141,12 +141,10 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
             }
         });
 
-        Intent intent = getIntent();
-        name =  intent.getStringExtra("name");
-        age = intent.getIntExtra("age", 0);
-        patient_name.setText(name + ", " + age);
-
-
+//        Intent intent = getIntent();
+//        name =  intent.getStringExtra("name");
+//        age = intent.getIntExtra("age", 0);
+//        patient_name.setText("name: " + name + " (" + age + ")");
     }
 
     @Override
@@ -206,8 +204,6 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
                 break;
             case R.id.pos_record:
                 Intent intent = new Intent(PositioningActivity.this, RecordingActivity.class);
-                intent.putExtra("name", name);
-                intent.putExtra("age", age);
                 intent.putExtra("position", getPosition());
               //  startActivityForResult(intent, TARGET_NAME);
                 startActivity(intent);
@@ -266,18 +262,24 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     private void dataCheck() {
         Dao dao = new Dao(this);
         RecordItem record = dao.getRcordById(dao.getRecentId());
-        patient_name.setText(record.getName());
+        patient_name.setText("name: " + record.getName() + " (" + record.getAge() + ")");
         if(!record.getRecordFile1().equals("")){
-            a.setBackgroundColor(Color.parseColor("#aed581"));
+            changeColor(a);
         }
         if(!record.getRecordFile2().equals("")){
-            p.setBackgroundColor(Color.parseColor("#aed581"));
+            changeColor(p);
         }
         if(!record.getRecordFile3().equals("")){
-            t.setBackgroundColor(Color.parseColor("#aed581"));
+            changeColor(t);
         }
         if(!record.getRecordFile4().equals("")){
-            m.setBackgroundColor(Color.parseColor("#aed581"));
+            changeColor(m);
         }
     }
+
+    private void changeColor(ImageView iv) {
+        iv.setBackgroundColor(Color.parseColor("#aed581"));
+    }
+
+
 }

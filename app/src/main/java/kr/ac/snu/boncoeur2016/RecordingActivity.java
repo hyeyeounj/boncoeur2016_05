@@ -57,11 +57,9 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
         });
 
         Intent intent = getIntent();
-        name = intent.getStringExtra("name");
-        age = intent.getIntExtra("age", 0);
+//        name = intent.getStringExtra("name");
+//        age = intent.getIntExtra("age", 0);
         position = intent.getStringExtra("position");
-
-        patient_info.setText(name + " , " + age + ", position: "+position);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -149,15 +147,24 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     protected void onPause() {
-
-        recordingThread.stopAcquisition();
         super.onPause();
+        recordingThread.stopAcquisition();
+
     }
 
     @Override
     protected void onResume() {
-
-        recordingThread.startAcquisition(position);
         super.onResume();
+        recordingThread.startAcquisition(position);
+        getPatientInfo();
+    }
+
+    private void getPatientInfo() {
+        Dao dao = new Dao(this);
+        RecordItem record = dao.getRcordById(dao.getRecentId());
+        name = record.getName();
+        age = record.getAge();
+        Log.d("test", "NAME" + name + "," + age);
+        patient_info.setText("name: " + name + " (" + age + ") position: "+position);
     }
 }
