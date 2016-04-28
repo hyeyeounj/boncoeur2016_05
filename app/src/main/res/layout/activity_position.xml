@@ -54,9 +54,9 @@
 
     <RelativeLayout
         android:id="@+id/pos_message_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#12387b"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/pos_background"
         android:orientation="vertical"
         android:visibility="invisible"
         >
@@ -97,15 +97,32 @@
             android:textSize="16dp"
             android:visibility="invisible"/>
 
-
         <ImageView
             android:id="@+id/pos_record"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_below="@+id/pos_message_m"
             android:layout_marginLeft="15dp"
-            android:src="@android:drawable/ic_media_play" />
+            android:src="@android:drawable/ic_menu_add" />
 
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/play_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pos_message_container"
+        android:visibility="invisible"
+        >
+
+        <ImageView
+            android:background="@color/pos_background"
+            android:id="@+id/pos_play"
+            android:layout_width="@dimen/relative_backgroud"
+            android:layout_height="@dimen/relative_backgroud"
+            android:layout_marginLeft="15dp"
+            android:src="@android:drawable/ic_media_play" />
     </RelativeLayout>
 
     <TextView

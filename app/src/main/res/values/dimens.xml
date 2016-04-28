@@ -4,4 +4,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="position_button_size">48dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="relative_backgroud">60dp</dimen>
 </resources>

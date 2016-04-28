@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import kr.ac.snu.boncoeur2016.utils.CustomDragShadowBuilder;
 import kr.ac.snu.boncoeur2016.utils.Define;
@@ -23,13 +24,13 @@ import kr.ac.snu.boncoeur2016.utils.Define;
  */
 public class PositioningActivity extends AppCompatActivity implements View.OnLongClickListener, View.OnClickListener, View.OnTouchListener {
 
-    ImageView t, p, a, m, record;
+    ImageView t, p, a, m, record, play;
     Point offset = new Point(0, 0);
     RelativeLayout back;
-    RelativeLayout container;
+    RelativeLayout container, play_container;
     TextView pos_m, pos_p, pos_a, pos_t, patient_name;
-    String name, position;
-    int age;
+    Dao dao;
+    boolean playP, playT, playA, playM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +38,9 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         setContentView(R.layout.activity_position);
 
         back = (RelativeLayout)findViewById(R.id.back);
-
         patient_name = (TextView)findViewById(R.id.patient_info);
 
+        dao = new Dao(this);
         t = (ImageView)findViewById(R.id.pos_t);
         p = (ImageView)findViewById(R.id.pos_p);
         a = (ImageView)findViewById(R.id.pos_a);
@@ -125,26 +126,27 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         back.setOnDragListener(listener);
 
         container = (RelativeLayout)findViewById(R.id.pos_message_container);
-        pos_m = (TextView)findViewById(R.id.pos_message_m);
+        play_container = (RelativeLayout)findViewById(R.id.play_container);
+        play = (ImageView)findViewById(R.id.pos_play);
         pos_p = (TextView)findViewById(R.id.pos_message_p);
         pos_t = (TextView)findViewById(R.id.pos_message_t);
         pos_a = (TextView)findViewById(R.id.pos_message_a);
+        pos_m = (TextView)findViewById(R.id.pos_message_m);
         record = (ImageView)findViewById(R.id.pos_record);
         record.setOnClickListener(this);
+        play.setOnClickListener(this);
         back.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (container.getVisibility() == View.VISIBLE) {
                     container.setVisibility(View.INVISIBLE);
                 }
+                if(play_container.getVisibility() == View.VISIBLE){
+                    play_container.setVisibility(View.INVISIBLE);
+                }
                 return false;
             }
         });
-
-//        Intent intent = getIntent();
-//        name =  intent.getStringExtra("name");
-//        age = intent.getIntExtra("age", 0);
-//        patient_name.setText("name: " + name + " (" + age + ")");
     }
 
     @Override
@@ -182,34 +184,63 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
                 container.layout(x, y, x + 300, y + 300);
                 container.setVisibility(View.VISIBLE);
                 checkVisibility();
+                play_container.layout(x, y + 300, x + 300, y + 600);
+                checkPlayData(Define.POS_TAG_M);
                 pos_m.setVisibility(View.VISIBLE);
                 break;
             case R.id.pos_p:
                 container.layout(x, y, x + 300, y + 300);
                 container.setVisibility(View.VISIBLE);
                 checkVisibility();
+                play_container.layout(x, y + 300, x + 300, y + 600);
+                checkPlayData(Define.POS_TAG_P);
                 pos_p.setVisibility(View.VISIBLE);
                 break;
             case R.id.pos_a:
                 container.layout(x, y, x + 300, y + 300);
                 container.setVisibility(View.VISIBLE);
                 checkVisibility();
+                play_container.layout(x, y + 300, x + 300, y + 600);
+                checkPlayData(Define.POS_TAG_A);
                 pos_a.setVisibility(View.VISIBLE);
                 break;
             case R.id.pos_t:
                 container.layout(x, y, x + 300, y + 300);
                 container.setVisibility(View.VISIBLE);
                 checkVisibility();
+                play_container.layout(x, y + 300, x + 300, y + 600);
+                checkPlayData(Define.POS_TAG_T);
                 pos_t.setVisibility(View.VISIBLE);
                 break;
             case R.id.pos_record:
                 Intent intent = new Intent(PositioningActivity.this, RecordingActivity.class);
                 intent.putExtra("position", getPosition());
-              //  startActivityForResult(intent, TARGET_NAME);
                 startActivity(intent);
+                break;
+            case R.id.pos_play:
+                Toast.makeText(getApplicationContext(), "play~~", Toast.LENGTH_SHORT).show();
+                break;
         }
+    }
 
-
+    private void checkPlayData(String pos) {
+        if(pos.equals(Define.POS_TAG_M)){
+            if(playM){
+                play_container.setVisibility(View.VISIBLE);
+            }
+        }else if(pos.equals(Define.POS_TAG_P)){
+            if(playP){
+                play_container.setVisibility(View.VISIBLE);
+            }
+        }else if(pos.equals(Define.POS_TAG_T)){
+            if(playT){
+                play_container.setVisibility(View.VISIBLE);
+            }
+        }else if(pos.equals(Define.POS_TAG_A)){
+            if(playA){
+                play_container.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     private String getPosition() {
@@ -238,16 +269,6 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
 
     }
 
-    private void setContainer(int x, int y, String position) {
-
-
-        Log.d("test", "before visibility touched x: " + container.getX() + ", y: " + container.getY());
-
-
-        Log.d("test", "after touched x: " + container.getX() + ", y: " + container.getY());
-
-    }
-
     @Override
     public void onBackPressed() {
         //뒤로 못가게-동일인물 db계속 쌓임;
@@ -260,26 +281,27 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     }
 
     private void dataCheck() {
-        Dao dao = new Dao(this);
         RecordItem record = dao.getRcordById(dao.getRecentId());
         patient_name.setText("name: " + record.getName() + " (" + record.getAge() + ")");
         if(!record.getRecordFile1().equals("")){
             changeColor(a);
+            playA = true;
         }
         if(!record.getRecordFile2().equals("")){
             changeColor(p);
+            playP = true;
         }
         if(!record.getRecordFile3().equals("")){
             changeColor(t);
+            playT = true;
         }
         if(!record.getRecordFile4().equals("")){
             changeColor(m);
+            playM = true;
         }
     }
 
     private void changeColor(ImageView iv) {
-        iv.setBackgroundColor(Color.parseColor("#aed581"));
+        iv.setBackgroundColor(Color.parseColor("#fdd835"));
     }
-
-
 }
