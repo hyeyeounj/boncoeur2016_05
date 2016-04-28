@@ -1,14 +1,17 @@
 package kr.ac.snu.boncoeur2016;
 
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -18,11 +21,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import java.io.IOException;
 
 import kr.ac.snu.boncoeur2016.utils.CustomDragShadowBuilder;
 import kr.ac.snu.boncoeur2016.utils.Define;
 import kr.ac.snu.boncoeur2016.utils.NetworkUtil;
+import kr.ac.snu.boncoeur2016.utils.ProxyUp;
 
 /**
  * Created by hyes on 2016. 3. 17..
@@ -40,6 +45,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     String position;
     RecordItem recordItem;
     MediaPlayer player;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -240,7 +246,6 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
                 break;
             case R.id.pos_play:
                 playing(getDataToPlay());
-
                 break;
             case R.id.save_data_btn:
                 checkInternetConnection();
@@ -287,7 +292,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     private void checkInternetConnection() {
         int status = NetworkUtil.getConnectivityStatus(context);
         if(status == Define.TYPE_WIFI || status == Define.TYPE_MOBILE){
-            sendData();
+            alertDialog();
         }else if(status == Define.TYPE_NOT_CONNECTED){
             Toast.makeText(getApplicationContext(), "inaccessible", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getApplicationContext(), IntroActivity.class);
@@ -296,10 +301,62 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     }
 
     private void sendData() {
-        Toast.makeText(getApplicationContext(), "accessible", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
+
+        try {
+            progressDialog = ProgressDialog.show(PositioningActivity.this, "", "uploading...");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String[] filePaths = {recordItem.getRecordFile1(), recordItem.getRecordFile2(), recordItem.getRecordFile3(), recordItem.getRecordFile4()};
+
+        ProxyUp.uploadRecordData(recordItem, filePaths, new AsyncHttpResponseHandler() {
+
+            @Override
+            public void onSuccess(int statusCode, org.apache.http.Header[] headers, byte[] bytes) {
+                Log.i("test", "up onSuccess:" + statusCode);
+                progressDialog.cancel();
+                Toast.makeText(getApplicationContext(), "onSuccess", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onFailure(int statusCode, org.apache.http.Header[] headers, byte[] bytes, Throwable throwable) {
+                Log.e("test", "up onFailure:" + statusCode);
+                progressDialog.cancel();
+                Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+
+        Intent intent = new Intent(PositioningActivity.this, IntroActivity.class);
         startActivity(intent);
+
     }
+    private void alertDialog() {
+
+    AlertDialog.Builder alert_confirm = new AlertDialog.Builder(PositioningActivity.this);
+    alert_confirm.setMessage("Are you sure you want to send your data to BonCoeur?").setCancelable(false).setPositiveButton("CONFIRM",
+            new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    sendData();
+
+                }
+            }).setNegativeButton("CANCEL",
+            new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // 'No'
+                    finish();
+                    return;
+                }
+            });
+
+    AlertDialog alert = alert_confirm.create();
+    alert.show();
+
+}
 
     private void checkPlayData(String pos) {
         if(pos.equals(Define.POS_TAG_M)){
