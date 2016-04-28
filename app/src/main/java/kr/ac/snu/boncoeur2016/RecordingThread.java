@@ -80,29 +80,6 @@ public class RecordingThread {
         mThread.start();
     }
 
-    public void stopAcquisition() {
-        if (mThread == null)
-            return;
-
-        Dao dao = new Dao(context);
-        RecordItem record = dao.getRcordById(dao.getRecentId());
-
-        if(position.equals(Define.POS_TAG_A)){
-            dao.updateData1(filePath, record.getName(), dao.getRecentId());
-        }else if(position.equals(Define.POS_TAG_P)){
-            dao.updateData2(filePath, record.getName(), dao.getRecentId());
-        }else if(position.equals(Define.POS_TAG_T)){
-            dao.updateData3(filePath, record.getName(), dao.getRecentId());
-        }else if(position.equals(Define.POS_TAG_M)){
-            dao.updateData4(filePath, record.getName(), dao.getRecentId());
-        }
-        Log.d("test", "recentID!!!!!!!!!! "+ dao.getRecentId() + record.getName() + filePath);
-        mShouldContinue = false;
-        mThread = null;
-
-        //fileName = "aaa"+timestamp.format(new Date()).toString() + "REC.mp4";
-    }
-
     public void stopAcquisition(int id) {
 
         if (mThread == null)
