@@ -102,14 +102,14 @@ public class WaveFormView extends View {
         }
     }
 
-    public void setSamples(short[] samples) {
-        if (mSamplesLastPos + samples.length <= mSamples.length) {
-            System.arraycopy(samples, 0, mSamples, mSamplesLastPos, samples.length);
-            mSamplesLastPos = mSamplesLastPos + samples.length;
+    public void setSamples(short[] samples, int offset, int size) {
+        if (mSamplesLastPos + size <= mSamples.length) {
+            System.arraycopy(samples, offset, mSamples, mSamplesLastPos, size);
+            mSamplesLastPos = mSamplesLastPos + size;
         } else {
-            System.arraycopy(samples, 0, mSamples, mSamplesLastPos, mSamples.length - mSamplesLastPos);
-            System.arraycopy(samples, mSamples.length - mSamplesLastPos, mSamples, 0, samples.length - (mSamples.length - mSamplesLastPos));
-            mSamplesLastPos = samples.length - (mSamples.length - mSamplesLastPos);
+            System.arraycopy(samples, offset, mSamples, mSamplesLastPos, mSamples.length - mSamplesLastPos);
+            System.arraycopy(samples, offset + mSamples.length - mSamplesLastPos, mSamples, 0, size - (mSamples.length - mSamplesLastPos));
+            mSamplesLastPos = size - (mSamples.length - mSamplesLastPos);
         }
         onSamplesChanged();
     }

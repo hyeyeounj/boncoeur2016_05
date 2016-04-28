@@ -19,7 +19,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 
 import kr.ac.snu.boncoeur2016.utils.Define;
@@ -137,7 +136,10 @@ public class RecordingThread {
             bufferSize = SAMPLE_RATE * 2;
         }
 //        byte audioData[] = new byte[bufferSize];
-        short[] audioBuffer = new short[bufferSize / 8];
+//        short[] audioBuffer = new short[bufferSize / 8];
+        short[] audioBuffer = new short[SAMPLE_RATE / 15];
+        int drawBuffer = SAMPLE_RATE / 60;
+        long curTime = 0;
 //        short[] audioBuffer = new short[bufferSize * 2 ];
 
         AudioRecord record = new AudioRecord(MediaRecorder.AudioSource.MIC,
@@ -235,8 +237,17 @@ public class RecordingThread {
                 mNowSaving = true;
             }
 
-            int numberOfShort = record.read(audioBuffer, 0, audioBuffer.length);
-            mListener.onAudioDataReceived(Arrays.copyOfRange(audioBuffer, 0, numberOfShort));
+            int numberOfShort = 0, nRead;
+            while (numberOfShort != audioBuffer.length) {
+                if (numberOfShort + drawBuffer < audioBuffer.length)
+                    nRead = record.read(audioBuffer, numberOfShort, drawBuffer);
+                else
+                    nRead = record.read(audioBuffer, numberOfShort, audioBuffer.length - numberOfShort);
+                mListener.onAudioDataReceived(audioBuffer, numberOfShort, nRead);
+                Log.i("RecordingThread", "Drawing Time : " + (int) (System.currentTimeMillis() - curTime));
+                curTime = System.currentTimeMillis();
+                numberOfShort += nRead;
+            }
 //            Log.i("RecordingThread", "numberOfShort : " + numberOfShort);
             shortsRead += numberOfShort;
 

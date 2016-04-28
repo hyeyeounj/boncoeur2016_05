@@ -53,9 +53,9 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
 
         recordingThread = new RecordingThread(context, new AudioDataReceivedListener() {
             @Override
-            public void onAudioDataReceived(short[] data) {
-                waveformView.setSamples(data);
-                waveformView2.setSamples(data);
+            public void onAudioDataReceived(short[] data, int offset, int size) {
+                waveformView.setSamples(data, offset, size);
+                waveformView2.setSamples(data, offset, size);
             }
         });
 
