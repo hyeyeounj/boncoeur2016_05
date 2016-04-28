@@ -2,6 +2,7 @@ package kr.ac.snu.boncoeur2016;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import kr.ac.snu.boncoeur2016.utils.CustomDragShadowBuilder;
 import kr.ac.snu.boncoeur2016.utils.Define;
+import kr.ac.snu.boncoeur2016.utils.NetworkUtil;
 
 /**
  * Created by hyes on 2016. 3. 17..
@@ -28,17 +30,21 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     Point offset = new Point(0, 0);
     RelativeLayout back;
     RelativeLayout container, play_container;
-    TextView pos_m, pos_p, pos_a, pos_t, patient_name;
+    TextView pos_m, pos_p, pos_a, pos_t, patient_name, save;
     Dao dao;
     boolean playP, playT, playA, playM;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_position);
+        context = this;
 
         back = (RelativeLayout)findViewById(R.id.back);
         patient_name = (TextView)findViewById(R.id.patient_info);
+        save = (TextView)findViewById(R.id.save_data_btn);
+        save.setOnClickListener(this);
 
         dao = new Dao(this);
         t = (ImageView)findViewById(R.id.pos_t);
@@ -220,7 +226,27 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
             case R.id.pos_play:
                 Toast.makeText(getApplicationContext(), "play~~", Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.save_data_btn:
+                checkInternetConnection();
+                break;
         }
+    }
+
+    private void checkInternetConnection() {
+        int status = NetworkUtil.getConnectivityStatus(context);
+        if(status == Define.TYPE_WIFI || status == Define.TYPE_MOBILE){
+            sendData();
+        }else if(status == Define.TYPE_NOT_CONNECTED){
+            Toast.makeText(getApplicationContext(), "inaccessible", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getApplicationContext(), IntroActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    private void sendData() {
+        Toast.makeText(getApplicationContext(), "accessible", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
+        startActivity(intent);
     }
 
     private void checkPlayData(String pos) {
