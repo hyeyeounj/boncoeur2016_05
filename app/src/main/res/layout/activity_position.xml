@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:id="@+id/back"
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:background="#12387b">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/back"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#12387b"
+    android:orientation="vertical">
 
     <ImageView
+        android:id="@+id/imageView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/imageView"
         android:layout_alignParentStart="false"
         android:adjustViewBounds="false"
         android:baselineAlignBottom="false"
         android:cropToPadding="false"
         android:focusable="false"
         android:scaleType="fitCenter"
-        android:src="@drawable/body"/>
+        android:src="@drawable/body" />
 
     <ImageView
         android:id="@+id/pos_a"
@@ -24,8 +24,7 @@
         android:layout_height="@dimen/position_button_size"
         android:layout_marginLeft="170dp"
         android:layout_marginTop="240dp"
-        android:background="@drawable/circle"
-        />
+        android:background="@drawable/circle" />
 
     <ImageView
         android:id="@+id/pos_p"
@@ -33,7 +32,7 @@
         android:layout_height="@dimen/position_button_size"
         android:layout_marginLeft="210dp"
         android:layout_marginTop="240dp"
-        android:background="@drawable/circle"/>
+        android:background="@drawable/circle" />
 
     <ImageView
         android:id="@+id/pos_t"
@@ -58,8 +57,7 @@
         android:layout_height="wrap_content"
         android:background="@color/pos_background"
         android:orientation="vertical"
-        android:visibility="invisible"
-        >
+        android:visibility="invisible">
 
         <TextView
             android:id="@+id/pos_message_m"
@@ -68,7 +66,7 @@
             android:text="@string/pos_m"
             android:textColor="@android:color/white"
             android:textSize="16dp"
-            android:visibility="invisible"/>
+            android:visibility="invisible" />
 
         <TextView
             android:id="@+id/pos_message_p"
@@ -77,7 +75,7 @@
             android:text="@string/pos_p"
             android:textColor="@android:color/white"
             android:textSize="16dp"
-            android:visibility="invisible"/>
+            android:visibility="invisible" />
 
         <TextView
             android:id="@+id/pos_message_t"
@@ -86,7 +84,7 @@
             android:text="@string/pos_t"
             android:textColor="@android:color/white"
             android:textSize="16dp"
-            android:visibility="invisible"/>
+            android:visibility="invisible" />
 
         <TextView
             android:id="@+id/pos_message_a"
@@ -95,7 +93,7 @@
             android:text="@string/pos_a"
             android:textColor="@android:color/white"
             android:textSize="16dp"
-            android:visibility="invisible"/>
+            android:visibility="invisible" />
 
         <ImageView
             android:id="@+id/pos_record"
@@ -113,15 +111,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/pos_message_container"
-        android:visibility="invisible"
-        >
+        android:visibility="invisible">
 
         <ImageView
-            android:background="@color/pos_background"
             android:id="@+id/pos_play"
             android:layout_width="@dimen/relative_backgroud"
             android:layout_height="@dimen/relative_backgroud"
             android:layout_marginLeft="15dp"
+            android:background="@color/pos_background"
             android:src="@android:drawable/ic_media_play" />
     </RelativeLayout>
 
@@ -133,6 +130,19 @@
         android:layout_centerHorizontal="true"
         android:text="Large Text"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@android:color/white"/>
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/save_data_btn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="@string/save"
+        android:textColor="@android:color/white"
+        android:textSize="30dp"
+        android:layout_margin="5dp"/>
+
 
 </RelativeLayout>

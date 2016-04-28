@@ -2,10 +2,12 @@ package kr.ac.snu.boncoeur2016;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -16,8 +18,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+
 import kr.ac.snu.boncoeur2016.utils.CustomDragShadowBuilder;
 import kr.ac.snu.boncoeur2016.utils.Define;
+import kr.ac.snu.boncoeur2016.utils.NetworkUtil;
 
 /**
  * Created by hyes on 2016. 3. 17..
@@ -28,17 +33,24 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     Point offset = new Point(0, 0);
     RelativeLayout back;
     RelativeLayout container, play_container;
-    TextView pos_m, pos_p, pos_a, pos_t, patient_name;
+    TextView pos_m, pos_p, pos_a, pos_t, patient_name, save;
     Dao dao;
     boolean playP, playT, playA, playM;
+    Context context;
+    String position;
+    RecordItem recordItem;
+    MediaPlayer player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_position);
+        context = this;
 
         back = (RelativeLayout)findViewById(R.id.back);
         patient_name = (TextView)findViewById(R.id.patient_info);
+        save = (TextView)findViewById(R.id.save_data_btn);
+        save.setOnClickListener(this);
 
         dao = new Dao(this);
         t = (ImageView)findViewById(R.id.pos_t);
@@ -133,8 +145,10 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         pos_a = (TextView)findViewById(R.id.pos_message_a);
         pos_m = (TextView)findViewById(R.id.pos_message_m);
         record = (ImageView)findViewById(R.id.pos_record);
+
         record.setOnClickListener(this);
         play.setOnClickListener(this);
+
         back.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -143,6 +157,12 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
                 }
                 if(play_container.getVisibility() == View.VISIBLE){
                     play_container.setVisibility(View.INVISIBLE);
+                }
+                if(player != null){
+                    if(player.isPlaying()){
+                        player.stop();
+                        player.release();
+                    }
                 }
                 return false;
             }
@@ -153,13 +173,10 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     public boolean onTouch(View view, MotionEvent event) {
 
         switch (event.getAction()) {
-
             case MotionEvent.ACTION_DOWN: {
-
                 offset = new Point((int) event.getX(), (int) event.getY());
             }
         }
-
         return false;
     }
 
@@ -187,6 +204,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
                 play_container.layout(x, y + 300, x + 300, y + 600);
                 checkPlayData(Define.POS_TAG_M);
                 pos_m.setVisibility(View.VISIBLE);
+                position = Define.POS_TAG_M;
                 break;
             case R.id.pos_p:
                 container.layout(x, y, x + 300, y + 300);
@@ -195,6 +213,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
                 play_container.layout(x, y + 300, x + 300, y + 600);
                 checkPlayData(Define.POS_TAG_P);
                 pos_p.setVisibility(View.VISIBLE);
+                position = Define.POS_TAG_P;
                 break;
             case R.id.pos_a:
                 container.layout(x, y, x + 300, y + 300);
@@ -203,6 +222,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
                 play_container.layout(x, y + 300, x + 300, y + 600);
                 checkPlayData(Define.POS_TAG_A);
                 pos_a.setVisibility(View.VISIBLE);
+                position = Define.POS_TAG_A;
                 break;
             case R.id.pos_t:
                 container.layout(x, y, x + 300, y + 300);
@@ -211,6 +231,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
                 play_container.layout(x, y + 300, x + 300, y + 600);
                 checkPlayData(Define.POS_TAG_T);
                 pos_t.setVisibility(View.VISIBLE);
+                position = Define.POS_TAG_T;
                 break;
             case R.id.pos_record:
                 Intent intent = new Intent(PositioningActivity.this, RecordingActivity.class);
@@ -218,9 +239,66 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
                 startActivity(intent);
                 break;
             case R.id.pos_play:
-                Toast.makeText(getApplicationContext(), "play~~", Toast.LENGTH_SHORT).show();
+                playing(getDataToPlay());
+
+                break;
+            case R.id.save_data_btn:
+                checkInternetConnection();
                 break;
         }
+    }
+
+    private void playing(String fileName) {
+
+        player = new MediaPlayer();
+
+        try {
+            player.setDataSource(fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            player.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+        try {
+            player.start();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getDataToPlay() {
+        if(position == Define.POS_TAG_M){
+            return recordItem.getRecordFile4();
+        }else if(position == Define.POS_TAG_P){
+            return recordItem.getRecordFile2();
+        }else if(position == Define.POS_TAG_A){
+            return recordItem.getRecordFile1();
+        }else if(position == Define.POS_TAG_T){
+            return recordItem.getRecordFile3();
+        }
+        return null;
+    }
+
+    private void checkInternetConnection() {
+        int status = NetworkUtil.getConnectivityStatus(context);
+        if(status == Define.TYPE_WIFI || status == Define.TYPE_MOBILE){
+            sendData();
+        }else if(status == Define.TYPE_NOT_CONNECTED){
+            Toast.makeText(getApplicationContext(), "inaccessible", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getApplicationContext(), IntroActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    private void sendData() {
+        Toast.makeText(getApplicationContext(), "accessible", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
+        startActivity(intent);
     }
 
     private void checkPlayData(String pos) {
@@ -266,7 +344,9 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         }else if(pos_t.getVisibility() == View.VISIBLE){
             pos_t.setVisibility(View.INVISIBLE);
         }
-
+        if(play_container.getVisibility() == View.VISIBLE){
+            play_container.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -281,21 +361,21 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     }
 
     private void dataCheck() {
-        RecordItem record = dao.getRcordById(dao.getRecentId());
-        patient_name.setText("name: " + record.getName() + " (" + record.getAge() + ")");
-        if(!record.getRecordFile1().equals("")){
+        recordItem = dao.getRcordById(dao.getRecentId());
+        patient_name.setText("name: " + recordItem.getName() + " (" + recordItem.getAge() + ")");
+        if(!recordItem.getRecordFile1().equals("")){
             changeColor(a);
             playA = true;
         }
-        if(!record.getRecordFile2().equals("")){
+        if(!recordItem.getRecordFile2().equals("")){
             changeColor(p);
             playP = true;
         }
-        if(!record.getRecordFile3().equals("")){
+        if(!recordItem.getRecordFile3().equals("")){
             changeColor(t);
             playT = true;
         }
-        if(!record.getRecordFile4().equals("")){
+        if(!recordItem.getRecordFile4().equals("")){
             changeColor(m);
             playM = true;
         }
