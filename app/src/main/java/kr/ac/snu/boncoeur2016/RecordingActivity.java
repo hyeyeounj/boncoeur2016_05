@@ -23,7 +23,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
     Context context;
     String name, position;
     int age;
-    TextView record_btn, patient_info;
+    TextView record_btn, patient_info, next_btn;
     Handler handler;
     private WaveFormView waveformView, waveformView2;
     private RecordingThread recordingThread;
@@ -38,6 +38,8 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
 
         record_btn = (TextView) findViewById(R.id.record_btn);
         record_btn.setOnClickListener(this);
+        next_btn = (TextView) findViewById(R.id.next);
+        next_btn.setOnClickListener(this);
         waveformView = (WaveFormView) findViewById(R.id.waveformView);
         waveformView2 = (WaveFormView) findViewById(R.id.waveformView2);
         waveformView.setPlotType(0);
@@ -92,6 +94,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
                     record_btn.setText("RECORD");
                     record_btn.setEnabled(true);
                     record_btn.setFocusable(true);
+                    next_btn.setVisibility(View.VISIBLE);
                     Log.d("test", "record stop");
 //                    goToPosition();
                 }
@@ -121,6 +124,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
                     record_btn.setText("RECORDING");
                     record_btn.setEnabled(false);
                     record_btn.setFocusable(false);
+                    next_btn.setVisibility(View.GONE);
                     Log.d("test", "record start");
                 } else {
 //                    recordingThread.stopAcquisition();
@@ -128,6 +132,8 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
 //                    Log.d("test", "record stop");
                 }
                 break;
+            case R.id.next:
+                goToPosition();
         }
 
     }
@@ -136,7 +142,8 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
     public void onBackPressed() {
         super.onBackPressed();
         Log.d("test", "pause");
-        recordingThread.stopAcquisition();
+        recordingThread.stopAcquisition(Define.PAUSE);
+        goToPosition();
         Log.d("test", "pause 종료");
     }
 

@@ -37,17 +37,29 @@
         app:mode="RECORDING"/>
 
     <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
         <TextView
             android:id="@+id/record_btn"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="fill_parent"
             android:gravity="center"
             android:text="@string/record"
             android:textSize="30dp"/>
+
+        <TextView
+            android:id="@+id/next"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="@string/next"
+            android:textSize="30dp"
+            android:visibility="gone"/>
     </LinearLayout>
 
 </LinearLayout>
