@@ -3,7 +3,6 @@ package kr.ac.snu.boncoeur2016;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -11,6 +10,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import kr.ac.snu.boncoeur2016.utils.Define;
 
 /**
  * Created by hyes on 2016. 4. 25..
@@ -71,8 +72,7 @@ public class RecordTargetInfoActivity extends AppCompatActivity {
                         dao.targetInsert(target_name, target_age);
 
                         Intent intent = new Intent(getApplicationContext(), PositioningActivity.class);
-                        intent.putExtra("name", target_name);
-                        intent.putExtra("age", target_age);
+                        intent.putExtra("id", Define.REVISION);
                         startActivityForResult(intent, TARGET_NAME);
 
 

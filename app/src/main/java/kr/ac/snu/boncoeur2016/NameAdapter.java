@@ -45,8 +45,6 @@ public class NameAdapter extends ArrayAdapter<NameItem> {
         name_tv.setText(nameList.get(position).getName());
 
 
-
-
         return row;
 
     }

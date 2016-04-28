@@ -101,14 +101,35 @@ public class RecordingThread {
         mThread = null;
 
         //fileName = "aaa"+timestamp.format(new Date()).toString() + "REC.mp4";
-
     }
-    public void stopAcquisition(int pause) {
 
-        if(pause == Define.PAUSE){
+    public void stopAcquisition(int id) {
+
+        if (mThread == null)
+            return;
+
+        if(id == Define.PAUSE){
+            mShouldContinue = false;
+            mThread = null;
+        }else{
+            Log.d("test", "ID" + id);
+            Dao dao = new Dao(context);
+            RecordItem record = dao.getRcordById(id);
+
+            if(position.equals(Define.POS_TAG_A)){
+                dao.updateData1(filePath, record.getName(), id);
+            }else if(position.equals(Define.POS_TAG_P)){
+                dao.updateData2(filePath, record.getName(), id);
+            }else if(position.equals(Define.POS_TAG_T)){
+                dao.updateData3(filePath, record.getName(), id);
+            }else if(position.equals(Define.POS_TAG_M)){
+                dao.updateData4(filePath, record.getName(), id);
+            }
+            Log.d("test", "ID!!!!!!!!!! "+ id + record.getName() + filePath);
             mShouldContinue = false;
             mThread = null;
         }
+
     }
 
     private byte[] short2byte(short[] sData, int len) {

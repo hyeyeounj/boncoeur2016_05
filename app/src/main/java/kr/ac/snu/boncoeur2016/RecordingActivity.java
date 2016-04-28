@@ -22,7 +22,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
 
     Context context;
     String name, position;
-    int age;
+    int age, id;
     TextView record_btn, patient_info, next_btn;
     Handler handler;
     private WaveFormView waveformView, waveformView2;
@@ -33,6 +33,10 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recording);
         context = this;
+
+        Intent intent = getIntent();
+        position = intent.getStringExtra("position");
+        idCheck(intent.getIntExtra("id", 0));
 
         patient_info = (TextView) findViewById(R.id.patient_info);
 
@@ -50,21 +54,27 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
         recordingThread = new RecordingThread(context, new AudioDataReceivedListener() {
             @Override
             public void onAudioDataReceived(short[] data) {
-//                Log.i( "RecordingActivity", "data.length : " + data.length );
                 waveformView.setSamples(data);
                 waveformView2.setSamples(data);
             }
         });
 
-        Intent intent = getIntent();
-//        name = intent.getStringExtra("name");
-//        age = intent.getIntExtra("age", 0);
-        position = intent.getStringExtra("position");
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         recordingThread.startAcquisition(position);
 //        actionBar.setHomeButtonEnabled(true);
+    }
+
+    private void idCheck(int id) {
+        if(id == Define.REVISION){
+            Dao dao = new Dao(this);
+            this.id = dao.getRecentId();
+            Log.d("test", "수정시 id가 : "+ id);
+        }else{
+            this.id = id;
+            Log.d("test", "새로운 id가 : "+ id);
+        }
     }
 
     @Override
@@ -108,6 +118,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
 
     private void goToPosition() {
         Intent intent = new Intent(getApplicationContext(), PositioningActivity.class);
+        intent.putExtra("id", id);
         startActivity(intent);
     }
 
@@ -148,7 +159,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onPause() {
         super.onPause();
-        recordingThread.stopAcquisition();
+        recordingThread.stopAcquisition(id);
 
     }
 
@@ -161,7 +172,8 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
 
     private void getPatientInfo() {
         Dao dao = new Dao(this);
-        RecordItem record = dao.getRcordById(dao.getRecentId());
+        RecordItem record = dao.getRcordById(id);
+//        RecordItem record = dao.getRcordById(dao.getRecentId());
         name = record.getName();
         age = record.getAge();
         Log.d("test", "NAME" + name + "," + age);
