@@ -134,7 +134,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         back.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(container.getVisibility() == View.VISIBLE){
+                if (container.getVisibility() == View.VISIBLE) {
                     container.setVisibility(View.INVISIBLE);
                 }
                 return false;
@@ -146,17 +146,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         age = intent.getIntExtra("age", 0);
         patient_name.setText(name + ", " + age);
 
-        Dao dao = new Dao(this);
-        RecordItem record = dao.getRcordById(dao.getRecentId());
-        patient_name.setText(record.getName());
-        Log.d("test", "file1" + record.getRecordFile2() + ", " + record.getName() + ", " + record.getPos1() + record.getRecordFile2() + ", " + record.getPos2() + record.getRecordFile3() + ", " + record.getPos3()+ record.getRecordFile4() + ", " + record.getPos4()  );
-        //selected_position = intent.getStringExtra("selectedPos");
-        Log.d("test", "1데이터가 있나" + record.getRecordFile1());
 
-        if(!record.getRecordFile1().equals("")){
-            a.setBackgroundColor(Color.parseColor("#aed581"));
-            Log.d("test", "데이터가 있나" + record.getRecordFile1());
-        }
     }
 
     @Override
@@ -270,8 +260,24 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     @Override
     protected void onResume() {
         super.onResume();
-        Dao dao = new Dao(this);
-        //record다 불러와서 재표시할 부분
+        dataCheck();
+    }
 
+    private void dataCheck() {
+        Dao dao = new Dao(this);
+        RecordItem record = dao.getRcordById(dao.getRecentId());
+        patient_name.setText(record.getName());
+        if(!record.getRecordFile1().equals("")){
+            a.setBackgroundColor(Color.parseColor("#aed581"));
+        }
+        if(!record.getRecordFile2().equals("")){
+            p.setBackgroundColor(Color.parseColor("#aed581"));
+        }
+        if(!record.getRecordFile3().equals("")){
+            t.setBackgroundColor(Color.parseColor("#aed581"));
+        }
+        if(!record.getRecordFile4().equals("")){
+            m.setBackgroundColor(Color.parseColor("#aed581"));
+        }
     }
 }
