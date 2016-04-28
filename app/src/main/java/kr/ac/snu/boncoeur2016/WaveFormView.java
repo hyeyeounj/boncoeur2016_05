@@ -102,14 +102,14 @@ public class WaveFormView extends View {
         }
     }
 
-    public void setSamples(short[] samples) {
-        if (mSamplesLastPos + samples.length <= mSamples.length) {
-            System.arraycopy(samples, 0, mSamples, mSamplesLastPos, samples.length);
-            mSamplesLastPos = mSamplesLastPos + samples.length;
+    public void setSamples(short[] samples, int offset, int size) {
+        if (mSamplesLastPos + size <= mSamples.length) {
+            System.arraycopy(samples, offset, mSamples, mSamplesLastPos, size);
+            mSamplesLastPos = mSamplesLastPos + size;
         } else {
-            System.arraycopy(samples, 0, mSamples, mSamplesLastPos, mSamples.length - mSamplesLastPos);
-            System.arraycopy(samples, mSamples.length - mSamplesLastPos, mSamples, 0, samples.length - (mSamples.length - mSamplesLastPos));
-            mSamplesLastPos = samples.length - (mSamples.length - mSamplesLastPos);
+            System.arraycopy(samples, offset, mSamples, mSamplesLastPos, mSamples.length - mSamplesLastPos);
+            System.arraycopy(samples, offset + mSamples.length - mSamplesLastPos, mSamples, 0, size - (mSamples.length - mSamplesLastPos));
+            mSamplesLastPos = size - (mSamples.length - mSamplesLastPos);
         }
         onSamplesChanged();
     }
@@ -133,18 +133,13 @@ public class WaveFormView extends View {
             if (x != 0)
                 index1 = (int) (((x * 1.0f) / (width * nPlots)) * buffer.length);
             int index2 = (int) (((x + 1 * 1.0f) / (width * nPlots)) * buffer.length);
-            short[] samples;
-            if (index1 >= index2)
-//                samples = Arrays.copyOfRange(buffer, index1, index2);
-//            else {
+            if (index1 >= index2) {
 
                 if (index1 == 0)
                     index2++;
-//                    samples = Arrays.copyOfRange(buffer, index1, index2 + 1);
                 else
                     index1--;
-//                    samples = Arrays.copyOfRange(buffer, index1 - 1, index2);
-//            }
+            }
             int maxS = Short.MIN_VALUE, minS = Short.MAX_VALUE, minpos = 0, maxpos = 0;
             for (int i = index1; i < index2; i++) {
                 if (maxS < buffer[i]) {

@@ -23,7 +23,8 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
     Context context;
     String name, position;
     int age, id;
-    TextView record_btn, patient_info, next_btn;
+    TextView patient_info, next_btn;
+    nayoso.staticprogressbar.CustomProgress record_btn;
     Handler handler;
     private WaveFormView waveformView, waveformView2;
     private RecordingThread recordingThread;
@@ -39,8 +40,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
         idCheck(intent.getIntExtra("id", 0));
 
         patient_info = (TextView) findViewById(R.id.patient_info);
-
-        record_btn = (TextView) findViewById(R.id.record_btn);
+        record_btn = (nayoso.staticprogressbar.CustomProgress) findViewById(R.id.record_btn);
         record_btn.setOnClickListener(this);
         next_btn = (TextView) findViewById(R.id.next);
         next_btn.setOnClickListener(this);
@@ -53,11 +53,11 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
 
         recordingThread = new RecordingThread(context, new AudioDataReceivedListener() {
             @Override
-            public void onAudioDataReceived(short[] data) {
-                waveformView.setSamples(data);
-                waveformView2.setSamples(data);
+            public void onAudioDataReceived(short[] data, int offset, int size) {
+                waveformView.setSamples(data, offset, size);
+                waveformView2.setSamples(data, offset, size);
             }
-        });
+        }, this);
 
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -99,7 +99,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
                 @Override
                 public void run() {
                     recordingThread.stopSave();
-                    record_btn.setText("RECORD");
+                    record_btn.setText("RECORD AGAIN");
                     record_btn.setEnabled(true);
                     record_btn.setFocusable(true);
                     next_btn.setVisibility(View.VISIBLE);
@@ -160,7 +160,6 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
     protected void onPause() {
         super.onPause();
         recordingThread.stopAcquisition(id);
-
     }
 
     @Override
