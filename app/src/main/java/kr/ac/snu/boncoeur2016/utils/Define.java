@@ -11,11 +11,9 @@ public class Define {
     public static final String POS_TAG_M = "mitral";
     public static final String POS_TAG_T = "tricuspid";
 
-
     public static int TYPE_WIFI = 1;
     public static int TYPE_MOBILE = 2;
     public static int TYPE_NOT_CONNECTED = 0;
-
 
     public static final String RECORDED_FILEPATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/BonCoeur/";
 
