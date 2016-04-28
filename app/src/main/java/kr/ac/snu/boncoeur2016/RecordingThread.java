@@ -1,5 +1,6 @@
 package kr.ac.snu.boncoeur2016;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -10,8 +11,11 @@ import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.util.Log;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
@@ -26,18 +30,16 @@ import kr.ac.snu.boncoeur2016.utils.Define;
 public class RecordingThread {
     private static final int SAMPLE_RATE = 8000;
     private static final String COMPRESSED_AUDIO_FILE_MIME_TYPE = "audio/mp4a-latm";
-    private static final int COMPRESSED_AUDIO_FILE_BIT_RATE = 48000; // 128kbps
+    private static final int COMPRESSED_AUDIO_FILE_BIT_RATE = 48000; // 48kbps
     private static final int COMPRESSED_AUDIO_SAMPLE_RATE = 8000;
     SimpleDateFormat timestamp;
     Context context;
+    String position;
     private String filePath = null;
-    private boolean mShouldContinue;
-    private boolean mShouldSave;
-    private boolean mNowSaving;
-    private boolean mShouldStop;
+    private boolean mShouldContinue, mShouldSave, mNowSaving, mShouldStop;
     private AudioDataReceivedListener mListener;
     private Thread mThread;
-    String position;
+    private FileOutputStream mFileStream = null;
 
     public RecordingThread(Context context, AudioDataReceivedListener listener) {
         mListener = listener;
@@ -120,6 +122,8 @@ public class RecordingThread {
 
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    @SuppressWarnings("deprecation")
     private void record() {
 
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
@@ -132,9 +136,9 @@ public class RecordingThread {
         if (bufferSize == AudioRecord.ERROR || bufferSize == AudioRecord.ERROR_BAD_VALUE) {
             bufferSize = SAMPLE_RATE * 2;
         }
-
 //        byte audioData[] = new byte[bufferSize];
-        short[] audioBuffer = new short[bufferSize * 1 / 4];
+        short[] audioBuffer = new short[bufferSize / 8];
+//        short[] audioBuffer = new short[bufferSize * 2 ];
 
         AudioRecord record = new AudioRecord(MediaRecorder.AudioSource.MIC,
                 SAMPLE_RATE,
@@ -149,7 +153,11 @@ public class RecordingThread {
         record.startRecording();
 
         timestamp = new SimpleDateFormat("yyyyMMddHHmmss");
-        filePath = Define.RECORDED_FILEPATH + position + "_" + timestamp.format(new Date()).toString() + "REC.mp4";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            filePath = Define.RECORDED_FILEPATH + position + "_" + timestamp.format(new Date()).toString() + "REC.mp4";
+        } else {
+            filePath = Define.RECORDED_FILEPATH + position + "_" + timestamp.format(new Date()).toString() + "REC.aac";
+        }
         //사용할 수 없는 파일 형식 ;; 확인
 
 /*        BufferedOutputStream os = null;
@@ -163,16 +171,24 @@ public class RecordingThread {
         try {
             at = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLE_RATE,
                     AudioFormat.CHANNEL_OUT_MONO,
-                    AudioFormat.ENCODING_PCM_16BIT, bufferSize * 4,
+                    AudioFormat.ENCODING_PCM_16BIT, AudioTrack.getMinBufferSize(SAMPLE_RATE,
+                    AudioFormat.CHANNEL_OUT_MONO,
+                    AudioFormat.ENCODING_PCM_16BIT),
 //                    AudioTrack.MODE_STATIC);
                     AudioTrack.MODE_STREAM);
+
+            Log.i("RecordingThread", "minBufferSize : " + AudioTrack.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT));
+
             at.setStereoVolume(1.0f, 1.0f);
+//            if (at.getPlayState() != AudioTrack.PLAYSTATE_PLAYING)
+            at.play();
+//            Log.i( "RecordingThread", "latency : " + (Integer)( ((AudioManager)context.getSystemService(Context.AUDIO_SERVICE) ).getClass().getMethod("getOutputLatency", int.class) ).invoke((AudioManager)context.getSystemService(Context.AUDIO_SERVICE), AudioManager.STREAM_MUSIC));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        MediaFormat outputFormat;
         MediaMuxer mux = null;
-        MediaFormat outputFormat = null;
         MediaCodec codec = null;
         ByteBuffer[] codecInputBuffers = null;
         ByteBuffer[] codecOutputBuffers = null;
@@ -189,8 +205,8 @@ public class RecordingThread {
 
                 try {
 
-                    at.setStereoVolume(0f, 0f);
-                    mux = new MediaMuxer(filePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+                    if (at != null)
+                        at.setStereoVolume(0f, 0f);
                     outputFormat = MediaFormat.createAudioFormat(COMPRESSED_AUDIO_FILE_MIME_TYPE,
                             COMPRESSED_AUDIO_SAMPLE_RATE, 1);
                     outputFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
@@ -206,6 +222,11 @@ public class RecordingThread {
 
                     outBuffInfo = new MediaCodec.BufferInfo();
 
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        mux = new MediaMuxer(filePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+                    } else {
+                        mFileStream = new FileOutputStream(new File(filePath));
+                    }
                 } catch (IOException ioe) {
 
                     ioe.printStackTrace();
@@ -221,16 +242,14 @@ public class RecordingThread {
 
             if (numberOfShort != 0) {
 
-                byte bData[] = short2byte(audioBuffer, (int) numberOfShort);
+                byte bData[] = short2byte(audioBuffer, numberOfShort);
                 if (at != null) {
-                    at.write(Arrays.copyOfRange(audioBuffer, 0, numberOfShort), 0, numberOfShort);
-                    if (at.getPlayState() != AudioTrack.PLAYSTATE_PLAYING)
-                        at.play();
+                    at.write(audioBuffer, 0, numberOfShort);
                 }
                 if (mNowSaving) {
 
                     if (outBuffInfo != null) {
-                        int processed = 0, total = bData.length, size = 0;
+                        int processed = 0, total = bData.length, size;
                         while (processed != total) {
 
 //                        Log.i( "RecordingThread" , "total : " + processed );
@@ -254,7 +273,7 @@ public class RecordingThread {
                                 processed += size;
                                 codec.queueInputBuffer(ind, 0, size, (long) presentationTimeUs, 0);
                                 totalBytesRead += size;
-                                presentationTimeUs = 1000000l * (totalBytesRead / 2) / SAMPLE_RATE;
+                                presentationTimeUs = 1000000L * (totalBytesRead / 2) / SAMPLE_RATE;
 
                                 if (processed != total)
                                     ind = codec.dequeueInputBuffer(0);
@@ -266,8 +285,12 @@ public class RecordingThread {
 
                             if (ind == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                                 outputFormat = codec.getOutputFormat();
-                                audioTrackIdx = mux.addTrack(outputFormat);
-                                mux.start();
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                                    audioTrackIdx = mux.addTrack(outputFormat);
+                                    mux.start();
+                                } else {
+
+                                }
                                 ind = codec.dequeueOutputBuffer(outBuffInfo, 0);
                             }
 
@@ -278,10 +301,32 @@ public class RecordingThread {
                                     encodedData.position(outBuffInfo.offset);
                                     encodedData.limit(outBuffInfo.offset + outBuffInfo.size);
 
-                                    if ((outBuffInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0 && outBuffInfo.size != 0) {
-                                        codec.releaseOutputBuffer(ind, false);
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                                        if ((outBuffInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0 && outBuffInfo.size != 0) {
+                                            codec.releaseOutputBuffer(ind, false);
+                                        } else {
+                                            mux.writeSampleData(audioTrackIdx, codecOutputBuffers[ind], outBuffInfo);
+                                            codec.releaseOutputBuffer(ind, false);
+                                        }
                                     } else {
-                                        mux.writeSampleData(audioTrackIdx, codecOutputBuffers[ind], outBuffInfo);
+
+                                        int outBitsSize = outBuffInfo.size;
+                                        int outPacketSize = outBitsSize + 7;    // 7 is ADTS size
+                                        ByteBuffer outBuf = codecOutputBuffers[ind];
+
+                                        outBuf.position(outBuffInfo.offset);
+                                        outBuf.limit(outBuffInfo.offset + outBitsSize);
+                                        try {
+                                            byte[] data = new byte[outPacketSize];  //space for ADTS header included
+                                            addADTStoPacket(data, outPacketSize);
+                                            outBuf.get(data, 7, outBitsSize);
+                                            outBuf.position(outBuffInfo.offset);
+                                            mFileStream.write(data, 0, outPacketSize);  //open FileOutputStream beforehand
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                        outBuf.clear();
                                         codec.releaseOutputBuffer(ind, false);
                                     }
 
@@ -306,8 +351,19 @@ public class RecordingThread {
                 if (outBuffInfo != null) {
                     codec.stop();
                     codec.release();
-                    mux.stop();
-                    mux.release();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        mux.stop();
+                        mux.release();
+                    } else {
+
+                        try {
+
+                            mFileStream.flush();
+                            mFileStream.close();
+                        } catch (IOException ioe) {
+                            ioe.printStackTrace();
+                        }
+                    }
                 }
                 mNowSaving = false;
                 mShouldStop = false;
@@ -323,5 +379,19 @@ public class RecordingThread {
         Log.v("test", String.format("Recording stopped. Samples read: %d", shortsRead));
     }
 
+    private void addADTStoPacket(byte[] packet, int packetLen) {
+        int profile = 2;  //AAC LC
+        //39=MediaCodecInfo.CodecProfileLevel.AACObjectELD;
+        int freqIdx = 11;  //4 for 44.1KHz, 11 for 8000Hz
+        int chanCfg = 1;  //CPE
 
+        // fill in ADTS data
+        packet[0] = (byte) 0xFF;
+        packet[1] = (byte) 0xF9;
+        packet[2] = (byte) (((profile - 1) << 6) + (freqIdx << 2) + (chanCfg >> 2));
+        packet[3] = (byte) (((chanCfg & 3) << 6) + (packetLen >> 11));
+        packet[4] = (byte) ((packetLen & 0x7FF) >> 3);
+        packet[5] = (byte) (((packetLen & 7) << 5) + 0x1F);
+        packet[6] = (byte) 0xFC;
+    }
 }

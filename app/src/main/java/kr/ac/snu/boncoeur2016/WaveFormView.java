@@ -8,8 +8,6 @@ import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
-
-import java.util.Arrays;
 /**
  * Created by hyes on 2016. 3. 25..
  */
@@ -62,7 +60,7 @@ public class WaveFormView extends View {
         mStrokePaint.setStrokeWidth(strokeThickness);
         mStrokePaint.setAntiAlias(true);
 
-        mSamples = new short[8000 * nPlots * 1 / 1];
+        mSamples = new short[8000 * nPlots];
     }
 
     public void setPlotType(int type) {
@@ -86,7 +84,7 @@ public class WaveFormView extends View {
         plot = new float[width * 4 * nPlots];
         borders = new float[4 * (nPlots + 1)];
         for (int i = 0; i <= nPlots; i++) {
-            borders[i * 4 + 0] = 0;
+            borders[i * 4] = 0;
             borders[i * 4 + 1] = height / nPlots * i;
             borders[i * 4 + 2] = width;
             borders[i * 4 + 3] = height / nPlots * i;
@@ -136,32 +134,36 @@ public class WaveFormView extends View {
                 index1 = (int) (((x * 1.0f) / (width * nPlots)) * buffer.length);
             int index2 = (int) (((x + 1 * 1.0f) / (width * nPlots)) * buffer.length);
             short[] samples;
-            if (index1 < index2)
-                samples = Arrays.copyOfRange(buffer, index1, index2);
-            else {
+            if (index1 >= index2)
+//                samples = Arrays.copyOfRange(buffer, index1, index2);
+//            else {
 
                 if (index1 == 0)
-                    samples = Arrays.copyOfRange(buffer, index1, index2 + 1);
+                    index2++;
+//                    samples = Arrays.copyOfRange(buffer, index1, index2 + 1);
                 else
-                    samples = Arrays.copyOfRange(buffer, index1 - 1, index2);
-            }
+                    index1--;
+//                    samples = Arrays.copyOfRange(buffer, index1 - 1, index2);
+//            }
             int maxS = Short.MIN_VALUE, minS = Short.MAX_VALUE, minpos = 0, maxpos = 0;
-            for (int i = 0; i < samples.length; i++) {
-                if (maxS < samples[i]) {
-                    maxS = samples[i];
+            for (int i = index1; i < index2; i++) {
+                if (maxS < buffer[i]) {
+                    maxS = buffer[i];
                     maxpos = i;
                 }
-                if (minS > samples[i]) {
-                    minS = samples[i];
+                if (minS > buffer[i]) {
+                    minS = buffer[i];
                     minpos = i;
                 }
             }
             float y = 0;
             if (plotType == 0) {
-                if (Math.abs(maxS) > Math.abs(minS))
-                    maxS = Math.abs(maxS);
-                else
-                    maxS = Math.abs(minS);
+                if (maxS < 0)
+                    maxS = -maxS;
+                if (minS < 0)
+                    minS = -minS;
+                if (maxS < minS)
+                    maxS = minS;
                 y = centerY - ((maxS / max) * centerY);
             } else if (plotType == 1) {
                 if (minS >= 0 && maxS >= 0 || maxS >= 0 && maxS >= -minS)
