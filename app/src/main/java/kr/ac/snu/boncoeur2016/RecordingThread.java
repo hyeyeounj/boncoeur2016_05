@@ -103,6 +103,13 @@ public class RecordingThread {
         //fileName = "aaa"+timestamp.format(new Date()).toString() + "REC.mp4";
 
     }
+    public void stopAcquisition(int pause) {
+
+        if(pause == Define.PAUSE){
+            mShouldContinue = false;
+            mThread = null;
+        }
+    }
 
     private byte[] short2byte(short[] sData, int len) {
         byte[] bytes = new byte[len * 2];
