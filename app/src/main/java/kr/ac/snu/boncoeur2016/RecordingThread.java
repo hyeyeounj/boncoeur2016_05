@@ -39,10 +39,12 @@ public class RecordingThread {
     private AudioDataReceivedListener mListener;
     private Thread mThread;
     private FileOutputStream mFileStream = null;
+    private RecordingActivity ra;
 
-    public RecordingThread(Context context, AudioDataReceivedListener listener) {
+    public RecordingThread(Context context, AudioDataReceivedListener listener, RecordingActivity ra) {
         mListener = listener;
         this.context = context;
+        this.ra = ra;
     }
 
     public boolean isAcquisitioning() {
@@ -180,7 +182,7 @@ public class RecordingThread {
 //                    AudioTrack.MODE_STATIC);
                     AudioTrack.MODE_STREAM);
 
-            Log.i("RecordingThread", "minBufferSize : " + AudioTrack.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT));
+//            Log.i("RecordingThread", "minBufferSize : " + AudioTrack.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT));
 
             at.setStereoVolume(1.0f, 1.0f);
 //            if (at.getPlayState() != AudioTrack.PLAYSTATE_PLAYING)
@@ -225,6 +227,10 @@ public class RecordingThread {
 
                     outBuffInfo = new MediaCodec.BufferInfo();
 
+                    File f = new File(filePath);
+                    if (f.exists())
+                        f.delete();
+
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                         mux = new MediaMuxer(filePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
                     } else {
@@ -234,6 +240,8 @@ public class RecordingThread {
 
                     ioe.printStackTrace();
                 }
+                totalBytesRead = 0;
+                presentationTimeUs = 0;
                 mShouldSave = false;
                 mNowSaving = true;
             }
@@ -245,9 +253,11 @@ public class RecordingThread {
                 else
                     nRead = record.read(audioBuffer, numberOfShort, audioBuffer.length - numberOfShort);
                 mListener.onAudioDataReceived(audioBuffer, numberOfShort, nRead);
-                Log.i("RecordingThread", "Drawing Time : " + (int) (System.currentTimeMillis() - curTime));
+//                Log.i("RecordingThread", "Drawing Time : " + (int) (System.currentTimeMillis() - curTime));
                 curTime = System.currentTimeMillis();
                 numberOfShort += nRead;
+                if (mNowSaving)
+                    ra.record_btn.setCurrentPercentage(50000.0 * (totalBytesRead + numberOfShort) / (SAMPLE_RATE * Define.SHORT_TIME));
             }
 //            Log.i("RecordingThread", "numberOfShort : " + numberOfShort);
             shortsRead += numberOfShort;
@@ -284,6 +294,7 @@ public class RecordingThread {
                                 }
                                 processed += size;
                                 codec.queueInputBuffer(ind, 0, size, (long) presentationTimeUs, 0);
+                                Log.i("RecordingThread", "totalBytesRead : " + totalBytesRead);
                                 totalBytesRead += size;
                                 presentationTimeUs = 1000000L * (totalBytesRead / 2) / SAMPLE_RATE;
 
@@ -358,6 +369,7 @@ public class RecordingThread {
 
             if (mShouldStop) {
 
+                ra.record_btn.setCurrentPercentage(0);
                 if (at != null)
                     at.setStereoVolume(1.0f, 1.0f);
                 if (outBuffInfo != null) {
