@@ -93,10 +93,9 @@ public class RecordingThread {
             mThread = null;
         }else{
             Log.d("test", "ID" + id);
-            Dao dao = new Dao(context);
-            RecordItem record = dao.getRcordById(id);
+            RecordItem record = Dao.getRcordById(id);
 
-            dao.updateData(position, filePath, record.getName(), id);
+            Dao.updateData(position, filePath, record.getName(), id);
 //            if(position.equals(Define.POS_TAG_A)){
 //                dao.updateData1(filePath, record.getName(), id);
 //            }else if(position.equals(Define.POS_TAG_P)){
@@ -157,13 +156,6 @@ public class RecordingThread {
         }
         record.startRecording();
 
-        timestamp = new SimpleDateFormat("yyyyMMddHHmmss");
-        filePath = Define.RECORDED_FILEPATH + position + "_" + timestamp.format(new Date()) + "REC.";
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            filePath += "mp4";
-        } else {
-            filePath += "aac";
-        }
         //사용할 수 없는 파일 형식 ;; 확인
 
 /*        BufferedOutputStream os = null;
@@ -227,6 +219,14 @@ public class RecordingThread {
                     codecOutputBuffers = codec.getOutputBuffers();
 
                     outBuffInfo = new MediaCodec.BufferInfo();
+
+                    timestamp = new SimpleDateFormat("yyyyMMddHHmmss");
+                    filePath = Define.RECORDED_FILEPATH + position + "_" + timestamp.format(new Date()) + "REC.";
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        filePath += "mp4";
+                    } else {
+                        filePath += "aac";
+                    }
 
                     File f = new File(filePath);
                     if (f.exists())

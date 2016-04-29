@@ -35,6 +35,7 @@ public class IntroActivity extends AppCompatActivity {
     }
 
     private void setFile() {
+        Dao.init(this);
         makeDirectory(RECORDED_FILEPATH);
         File nomedia = new File(RECORDED_FILEPATH+"/.nomedia");
         try {

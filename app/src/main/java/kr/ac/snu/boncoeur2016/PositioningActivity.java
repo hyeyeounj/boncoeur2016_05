@@ -64,7 +64,6 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         save = (TextView)findViewById(R.id.save_data_btn);
         save.setOnClickListener(this);
 
-        dao = new Dao(this);
         t = (ImageView)findViewById(R.id.pos_t);
         p = (ImageView)findViewById(R.id.pos_p);
         a = (ImageView)findViewById(R.id.pos_a);

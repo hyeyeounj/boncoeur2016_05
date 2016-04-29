@@ -68,8 +68,7 @@ public class RecordTargetInfoActivity extends AppCompatActivity {
                     try {
                         target_age = Integer.parseInt(temp_age);
 
-                        Dao dao = new Dao(getApplicationContext());
-                        dao.targetInsert(target_name, target_age);
+                        Dao.targetInsert(target_name, target_age);
 
                         Intent intent = new Intent(getApplicationContext(), PositioningActivity.class);
                         intent.putExtra("id", Define.REVISION);
