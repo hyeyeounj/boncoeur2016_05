@@ -24,9 +24,10 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
     String name, position;
     int age, id;
     TextView patient_info, next_btn;
-    nayoso.staticprogressbar.CustomProgress record_btn;
+    nayoso.staticprogressbar.CustomProgress record_btn, listen_btn;
     Handler handler;
-    private WaveFormView waveformView, waveformView2;
+    private WaveFormView waveformView;
+    private SpectrumView spectrumView;
     private RecordingThread recordingThread;
 
     @Override
@@ -42,20 +43,18 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
         patient_info = (TextView) findViewById(R.id.patient_info);
         record_btn = (nayoso.staticprogressbar.CustomProgress) findViewById(R.id.record_btn);
         record_btn.setOnClickListener(this);
-        next_btn = (TextView) findViewById(R.id.next);
+        listen_btn = (nayoso.staticprogressbar.CustomProgress) findViewById(R.id.listen_btn);
+        listen_btn.setOnClickListener(this);
+        next_btn = (TextView) findViewById(R.id.next_btn);
         next_btn.setOnClickListener(this);
         waveformView = (WaveFormView) findViewById(R.id.waveformView);
-        waveformView2 = (WaveFormView) findViewById(R.id.waveformView2);
-        waveformView.setPlotType(0);
-        waveformView2.setPlotType(1);
-        waveformView.setPlotMethod(1);
-        waveformView2.setPlotMethod(0);
+        spectrumView = (SpectrumView) findViewById(R.id.spectrumView);
 
         recordingThread = new RecordingThread(context, new AudioDataReceivedListener() {
             @Override
             public void onAudioDataReceived(short[] data, int offset, int size) {
                 waveformView.setSamples(data, offset, size);
-                waveformView2.setSamples(data, offset, size);
+                spectrumView.setSamples(data, offset, size);
             }
         }, this);
 
@@ -103,6 +102,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
                     record_btn.setEnabled(true);
                     record_btn.setFocusable(true);
                     next_btn.setVisibility(View.VISIBLE);
+                    listen_btn.setVisibility(View.VISIBLE);
                     Log.d("test", "record stop");
 //                    goToPosition();
                 }
@@ -134,6 +134,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
                     record_btn.setEnabled(false);
                     record_btn.setFocusable(false);
                     next_btn.setVisibility(View.GONE);
+                    listen_btn.setVisibility(View.GONE);
                     Log.d("test", "record start");
                 } else {
 //                    recordingThread.stopAcquisition();
@@ -141,8 +142,24 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
 //                    Log.d("test", "record stop");
                 }
                 break;
-            case R.id.next:
+            case R.id.next_btn:
                 goToPosition();
+                break;
+            case R.id.listen_btn:
+                new Thread() {
+
+                    public Thread init() {
+
+                        return this;
+                    }
+
+                    @Override
+                    public void run() {
+
+
+                    }
+                }.init().run();
+
         }
 
     }

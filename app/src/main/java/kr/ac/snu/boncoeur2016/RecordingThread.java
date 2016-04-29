@@ -96,15 +96,16 @@ public class RecordingThread {
             Dao dao = new Dao(context);
             RecordItem record = dao.getRcordById(id);
 
-            if(position.equals(Define.POS_TAG_A)){
-                dao.updateData1(filePath, record.getName(), id);
-            }else if(position.equals(Define.POS_TAG_P)){
-                dao.updateData2(filePath, record.getName(), id);
-            }else if(position.equals(Define.POS_TAG_T)){
-                dao.updateData3(filePath, record.getName(), id);
-            }else if(position.equals(Define.POS_TAG_M)){
-                dao.updateData4(filePath, record.getName(), id);
-            }
+            dao.updateData(position, filePath, record.getName(), id);
+//            if(position.equals(Define.POS_TAG_A)){
+//                dao.updateData1(filePath, record.getName(), id);
+//            }else if(position.equals(Define.POS_TAG_P)){
+//                dao.updateData2(filePath, record.getName(), id);
+//            }else if(position.equals(Define.POS_TAG_T)){
+//                dao.updateData3(filePath, record.getName(), id);
+//            }else if(position.equals(Define.POS_TAG_M)){
+//                dao.updateData4(filePath, record.getName(), id);
+//            }
             Log.d("test", "ID!!!!!!!!!! "+ id + record.getName() + filePath);
             mShouldContinue = false;
             mThread = null;
@@ -157,7 +158,7 @@ public class RecordingThread {
         record.startRecording();
 
         timestamp = new SimpleDateFormat("yyyyMMddHHmmss");
-        filePath = Define.RECORDED_FILEPATH + position + "_" + timestamp.format(new Date()) + "REC";
+        filePath = Define.RECORDED_FILEPATH + position + "_" + timestamp.format(new Date()) + "REC.";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             filePath += "mp4";
         } else {
