@@ -16,16 +16,14 @@ import kr.ac.snu.boncoeur2016.utils.Define;
  */
 public class Dao {
 
-    private static Context context;
-    private static SQLiteDatabase database;
-    private static boolean initCompleted = false;
+    private Context context;
+    private SQLiteDatabase database;
 
-    public static void init(Context c) {
+    public Dao(Context context) {
+        this.context = context;
 
-        if (initCompleted)
-            return;
-        context = c;
         database = context.openOrCreateDatabase("BonCoeurDATA.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
+
 
         try{
             String sql = "CREATE TABLE IF NOT EXISTS Record(ID integer primary key,"
@@ -48,10 +46,10 @@ public class Dao {
             Log.e("test", "CREATE TABLE FAILED! - " + e);
             e.printStackTrace();
         }
-        initCompleted = true;
     }
 
-    public static ArrayList<NameItem> getArticleList() {
+
+    public ArrayList<NameItem> getArticleList(){
 
         ArrayList<NameItem>nameList = new ArrayList<NameItem>();
         int id;
@@ -75,7 +73,7 @@ public class Dao {
     }
 
 
-    public static RecordItem getRecordingDataByName(int id, String name_selector) {
+    public RecordItem getRecordingDataByName(int id, String name_selector){
 
         RecordItem record = null;
         String name;
@@ -190,7 +188,7 @@ public class Dao {
 //        }
 //    }
 
-    public static int getRecentId() {
+    public int getRecentId(){
 
         String sql = "SELECT * FROM Record ORDER BY id desc limit 1;";
 
@@ -216,7 +214,7 @@ public class Dao {
         return id;
     }
 
-    public static RecordItem getRcordById(int i) {
+    public RecordItem getRcordById(int i){
 
         String sql = "SELECT * FROM Record where id = " + i + ";";
         RecordItem record =null;
@@ -271,7 +269,7 @@ public class Dao {
         return record;
     }
 
-    public static void updateData(String position, String audio, String name, int id) {
+    public void updateData(String position, String audio, String name, int id) {
 
         int pos = -1;
         for (int i = 0; i < 4; i++)
@@ -352,7 +350,7 @@ public class Dao {
 //        }
 //    }
 
-    public static void updateEmail(String email, String name, int id) {
+    public void updateEmail(String email, String name, int id) {
 
 
         String sql = "UPDATE Record SET email= '" +  email +  "' where name = '"+ name +"' and id = "+ id +";";
@@ -366,7 +364,7 @@ public class Dao {
         }
     }
 
-    public static void targetInsert(String name, int age) {
+    public void targetInsert(String name, int age) {
 
 
         String sql = "INSERT INTO Record (Name, Date, Age, email, audio1, pos1, audio2, pos2, audio3, pos3, audio4, pos4)"

@@ -18,7 +18,6 @@ import java.util.ArrayList;
  */
 public class NameListActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
-    private final Handler handler = new Handler();
     private ArrayList<NameItem> nameList;
     private ListView listView;
     private TextView tv, empty;
@@ -37,8 +36,10 @@ public class NameListActivity extends AppCompatActivity implements AdapterView.O
         refreshData();
     }
 
+
     private void listView(){
-        nameList = Dao.getArticleList();
+        Dao dao = new Dao(getApplicationContext());
+        nameList = dao.getArticleList();
 
         if(nameList.isEmpty()){
             //nameList.add(new NameItem(0, "EMPTY"));
@@ -51,6 +52,8 @@ public class NameListActivity extends AppCompatActivity implements AdapterView.O
         listView.setAdapter(nameAdapter);
         listView.setOnItemClickListener(this);
     }
+
+    private final Handler handler = new Handler();
 
     private void refreshData(){
         new Thread(){

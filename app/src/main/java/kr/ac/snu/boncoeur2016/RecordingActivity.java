@@ -67,7 +67,8 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
 
     private void idCheck(int id) {
         if(id == Define.REVISION){
-            this.id = Dao.getRecentId();
+            Dao dao = new Dao(this);
+            this.id = dao.getRecentId();
             Log.d("test", "수정시 id가 : "+ id);
         }else{
             this.id = id;
@@ -186,7 +187,8 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void getPatientInfo() {
-        RecordItem record = Dao.getRcordById(id);
+        Dao dao = new Dao(this);
+        RecordItem record = dao.getRcordById(id);
 //        RecordItem record = dao.getRcordById(dao.getRecentId());
         name = record.getName();
         age = record.getAge();
