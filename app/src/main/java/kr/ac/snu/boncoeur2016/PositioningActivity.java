@@ -1,5 +1,6 @@
 package kr.ac.snu.boncoeur2016;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipDescription;
@@ -353,7 +354,10 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     // 'No'
-                    finish();
+                    Intent intent = new Intent(context, MenuActivity.class);
+                    context.startActivity(intent);
+                    ((Activity) context).finish();
+
                     return;
                 }
             });
