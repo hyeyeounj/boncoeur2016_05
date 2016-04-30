@@ -110,7 +110,6 @@ public class RecordingThread {
             mShouldContinue = false;
             mThread = null;
         }
-
     }
 
     private byte[] short2byte(short[] sData, int len) {

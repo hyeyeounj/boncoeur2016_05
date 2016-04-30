@@ -22,8 +22,7 @@ public class Dao {
     public Dao(Context context) {
         this.context = context;
 
-        database = context.openOrCreateDatabase("BonCoeurDATA.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
-
+        database = context.openOrCreateDatabase(Define.RECORDED_FILEPATH + "BonCoeurDATA.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
 
         try{
             String sql = "CREATE TABLE IF NOT EXISTS Record(ID integer primary key,"
