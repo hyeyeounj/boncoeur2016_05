@@ -156,18 +156,17 @@ public class WaveFormView extends View {
 //                    maxS = minS;
 //                y = centerY - ((maxS / max) * centerY);
 //            } else if (plotType == 1) {
-                if (minS >= 0 && maxS >= 0 || maxS >= 0 && maxS >= -minS) {
-                    if (maxS > Short.MAX_VALUE / 2 )
-                        maxS = Short.MAX_VALUE / 2;
-                    maxS *= 2;
-                    y = centerY - maxS  * centerY / max;
-                }
-                else {
-                    if (minS < Short.MIN_VALUE / 2 )
-                        minS = Short.MIN_VALUE / 2;
-                    minS *= 2;
-                    y = centerY - minS * centerY / max;
-                }
+            if (minS >= 0 && maxS >= 0 || maxS >= 0 && maxS >= -minS) {
+                if (maxS > Short.MAX_VALUE / 2)
+                    maxS = Short.MAX_VALUE / 2;
+                maxS *= 2;
+                y = centerY - maxS * centerY / max;
+            } else {
+                if (minS < Short.MIN_VALUE / 2)
+                    minS = Short.MIN_VALUE / 2;
+                minS *= 2;
+                y = centerY - minS * centerY / max;
+            }
 //            }
 
             y = y / nPlots + centerY / nPlots * (x / width) * 2;
