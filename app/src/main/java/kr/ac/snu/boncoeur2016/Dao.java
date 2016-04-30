@@ -9,6 +9,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Date;
 
+import kr.ac.snu.boncoeur2016.utils.Define;
+
 /**
  * Created by hyes on 2016. 4. 25..
  */
@@ -20,8 +22,7 @@ public class Dao {
     public Dao(Context context) {
         this.context = context;
 
-        database = context.openOrCreateDatabase("BonCoeurDATA.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
-
+        database = context.openOrCreateDatabase(Define.RECORDED_FILEPATH + "BonCoeurDATA.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
 
         try{
             String sql = "CREATE TABLE IF NOT EXISTS Record(ID integer primary key,"
@@ -267,14 +268,21 @@ public class Dao {
         return record;
     }
 
+    public void updateData(String position, String audio, String name, int id) {
 
+        int pos = -1;
+        for (int i = 0; i < 4; i++)
+            if (position.equals(Define.POS_TAG[i])) {
+                pos = i + 1;
+                break;
+            }
+        if (pos == -1) {
+            Log.e("Dao", "Undefined Position : " + position);
+            // Otherwise...save on 5, 6, etc...
+            return;
+        }
 
-
-
-    public void updateData1(String audio, String name, int id) {
-
-
-        String sql = "UPDATE Record SET audio1='" +  audio +  "' where name = '" + name +"' and id = "+ id +";";
+        String sql = "UPDATE Record SET audio" + pos + "='" + audio + "' where name = '" + name + "' and id = " + id + ";";
 
         try {
             database.execSQL(sql);
@@ -284,48 +292,63 @@ public class Dao {
             e.printStackTrace();
         }
     }
+//
+//    public void updateData1(String audio, String name, int id) {
+//
+//
+//        String sql = "UPDATE Record SET audio1='" +  audio +  "' where name = '" + name +"' and id = "+ id +";";
+//
+//        try {
+//            database.execSQL(sql);
+//            Log.i("test", sql);
+//        } catch (Exception e) {
+//            Log.e("test", "DB error! - " + e);
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    public void updateData2(String audio, String name, int id) {
+//
+//
+//        String sql = "UPDATE Record SET audio2= '" +  audio +  "'where name = '"+ name +"' and id = "+ id +";";
+//
+//        try {
+//            database.execSQL(sql);
+//            Log.i("test", sql);
+//        } catch (Exception e) {
+//            Log.e("test", "DB error! - " + e);
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    public void updateData3(String audio, String name, int id) {
+//
+//
+//        String sql = "UPDATE Record SET audio3= '" +  audio +  "' where name = '"+ name+ "' and id = "+ id +";";
+//
+//        try {
+//            database.execSQL(sql);
+//            Log.i("test", sql);
+//        } catch (Exception e) {
+//            Log.e("test", "DB error! - " + e);
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    public void updateData4(String audio, String name, int id) {
+//
+//
+//        String sql = "UPDATE Record SET audio4= '" +  audio +  "' where name = '"+ name +"' and id = "+ id +";";
+//
+//        try {
+//            database.execSQL(sql);
+//            Log.i("test", sql);
+//        } catch (Exception e) {
+//            Log.e("test", "DB error! - " + e);
+//            e.printStackTrace();
+//        }
+//    }
 
-    public void updateData2(String audio, String name, int id) {
-
-
-        String sql = "UPDATE Record SET audio2= '" +  audio +  "'where name = '"+ name +"' and id = "+ id +";";
-
-        try {
-            database.execSQL(sql);
-            Log.i("test", sql);
-        } catch (Exception e) {
-            Log.e("test", "DB error! - " + e);
-            e.printStackTrace();
-        }
-    }
-
-    public void updateData3(String audio, String name, int id) {
-
-
-        String sql = "UPDATE Record SET audio3= '" +  audio +  "' where name = '"+ name+ "' and id = "+ id +";";
-
-        try {
-            database.execSQL(sql);
-            Log.i("test", sql);
-        } catch (Exception e) {
-            Log.e("test", "DB error! - " + e);
-            e.printStackTrace();
-        }
-    }
-
-    public void updateData4(String audio, String name, int id) {
-
-
-        String sql = "UPDATE Record SET audio4= '" +  audio +  "' where name = '"+ name +"' and id = "+ id +";";
-
-        try {
-            database.execSQL(sql);
-            Log.i("test", sql);
-        } catch (Exception e) {
-            Log.e("test", "DB error! - " + e);
-            e.printStackTrace();
-        }
-    }
     public void updateEmail(String email, String name, int id) {
 
 

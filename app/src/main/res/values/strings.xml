@@ -19,6 +19,7 @@
 
     <string name="record">RECORD</string>
     <string name="next">NEXT</string>
+    <string name="listen">LISTEN</string>
     <string name="save">SAVE</string>
 
     <string name="boncoeur">BonCoeur is designed for children with Rheumatic heart disease (RHD) especially in developing countries. BonCoeur service is intended to help making correct diagnoses without doctor\'s visit. Just record heart sounds and take pictures. Professional physicians will make a diagnosis for you in no time.</string>

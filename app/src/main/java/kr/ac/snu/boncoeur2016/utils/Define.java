@@ -10,6 +10,7 @@ public class Define {
     public static final String POS_TAG_P = "pulmonic";
     public static final String POS_TAG_M = "mitral";
     public static final String POS_TAG_T = "tricuspid";
+    public static final String[] POS_TAG = {POS_TAG_A, POS_TAG_P, POS_TAG_T, POS_TAG_M};
     public static final int REVISION = 8888;
     public static final String RECORDED_FILEPATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/BonCoeur/";
     public static final int SHORT_TIME = 5000;

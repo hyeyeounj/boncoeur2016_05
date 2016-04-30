@@ -21,6 +21,7 @@ public class ProxyUp {
         RequestParams params = new RequestParams();
 
         params.put("subject_name", record.getName());
+        params.put("age", record.getAge());
         params.put("time1", record.getDate());
         params.put("position1", record.getPos1());
         params.put("position2", record.getPos2());
