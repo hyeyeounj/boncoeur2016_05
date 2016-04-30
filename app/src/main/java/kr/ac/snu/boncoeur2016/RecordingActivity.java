@@ -420,7 +420,6 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
                     }.run();
                 } else {
 
-                    isPlaying = false;
                     handler.removeCallbacks(playStopThread);
                     handler.post(playStopThread);
                 }
