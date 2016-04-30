@@ -222,7 +222,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
 
                             recordingThread.stopAcquisition();
 
-                            listen_btn.setText(getResources().getString(R.string.record_stop));
+                            listen_btn.setText(getResources().getString(R.string.listen_stop));
                             record_btn.setVisibility(View.GONE);
                             next_btn.setVisibility(View.GONE);
 
