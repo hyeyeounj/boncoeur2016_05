@@ -34,6 +34,7 @@ public class RecordingThread {
     SimpleDateFormat timestamp;
     Context context;
     String position;
+    private int id;
     private String filePath = null;
     private boolean mShouldContinue, mShouldSave, mNowSaving, mShouldStop;
     private AudioDataReceivedListener mListener;
@@ -67,10 +68,11 @@ public class RecordingThread {
         mShouldStop = true;
     }
 
-    public void startAcquisition(String position) {
+    public void startAcquisition(int id, String position) {
         if (mThread != null)
             return;
 
+        this.id = id;
         this.position = position;
 
         mShouldContinue = true;
@@ -97,15 +99,6 @@ public class RecordingThread {
             RecordItem record = dao.getRcordById(id);
 
             dao.updateData(position, filePath, record.getName(), id);
-//            if(position.equals(Define.POS_TAG_A)){
-//                dao.updateData1(filePath, record.getName(), id);
-//            }else if(position.equals(Define.POS_TAG_P)){
-//                dao.updateData2(filePath, record.getName(), id);
-//            }else if(position.equals(Define.POS_TAG_T)){
-//                dao.updateData3(filePath, record.getName(), id);
-//            }else if(position.equals(Define.POS_TAG_M)){
-//                dao.updateData4(filePath, record.getName(), id);
-//            }
             Log.d("test", "ID!!!!!!!!!! "+ id + record.getName() + filePath);
             mShouldContinue = false;
             mThread = null;
@@ -218,6 +211,13 @@ public class RecordingThread {
 
                     outBuffInfo = new MediaCodec.BufferInfo();
 
+                    filePath = new Dao(context).getRcordById(id).getRecordFile(position);
+                    if (filePath != null && !filePath.equals((""))) {
+                        File f = new File(filePath);
+                        if (f.exists())
+                            f.delete();
+                    }
+
                     timestamp = new SimpleDateFormat("yyyyMMddHHmmss");
                     filePath = Define.RECORDED_FILEPATH + position + "_" + timestamp.format(new Date()) + "REC.";
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
@@ -225,11 +225,6 @@ public class RecordingThread {
                     } else {
                         filePath += "aac";
                     }
-                    //사용할 수 없는 파일 형식 ;; 확인
-
-                    File f = new File(filePath);
-                    if (f.exists())
-                        f.delete();
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                         mux = new MediaMuxer(filePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
@@ -277,8 +272,8 @@ public class RecordingThread {
 //                        Log.i( "RecordingThread" , "total : " + processed );
                             int ind = codec.dequeueInputBuffer(0);
 
-                            if (ind < 0 && ind != -1)
-                                Log.i("xxxxxx", ind + "");
+//                            if (ind < 0 && ind != -1)
+//                                Log.i("xxxxxx", ind + "");
 
                             while (ind >= 0 && processed != total) {
 
@@ -311,8 +306,6 @@ public class RecordingThread {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                                     audioTrackIdx = mux.addTrack(outputFormat);
                                     mux.start();
-                                } else {
-
                                 }
                                 ind = codec.dequeueOutputBuffer(outBuffInfo, 0);
                             }
@@ -325,12 +318,8 @@ public class RecordingThread {
                                     encodedData.limit(outBuffInfo.offset + outBuffInfo.size);
 
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                                        if ((outBuffInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0 && outBuffInfo.size != 0) {
-                                            codec.releaseOutputBuffer(ind, false);
-                                        } else {
+                                        if (!((outBuffInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0 && outBuffInfo.size != 0))
                                             mux.writeSampleData(audioTrackIdx, codecOutputBuffers[ind], outBuffInfo);
-                                            codec.releaseOutputBuffer(ind, false);
-                                        }
                                     } else {
 
                                         int outBitsSize = outBuffInfo.size;
@@ -350,9 +339,9 @@ public class RecordingThread {
                                         }
 
                                         outBuf.clear();
-                                        codec.releaseOutputBuffer(ind, false);
                                     }
 
+                                    codec.releaseOutputBuffer(ind, false);
                                     ind = codec.dequeueOutputBuffer(outBuffInfo, 0);
                                 } catch (Exception e) {
                                     e.printStackTrace();

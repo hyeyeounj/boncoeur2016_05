@@ -61,7 +61,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        recordingThread.startAcquisition(position);
+        recordingThread.startAcquisition(id, position);
 //        actionBar.setHomeButtonEnabled(true);
     }
 
@@ -183,7 +183,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onResume() {
         super.onResume();
-        recordingThread.startAcquisition(position);
+        recordingThread.startAcquisition(id, position);
         getPatientInfo();
     }
 
