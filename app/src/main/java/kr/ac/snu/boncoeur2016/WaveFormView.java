@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 /**
  * Created by hyes on 2016. 3. 25..
@@ -91,6 +92,12 @@ public class WaveFormView extends View {
     }
 
     public void setSamples(short[] samples, int offset, int size) {
+
+        if (size <= 0) {
+            Log.i("WaveFormView", "Recording Error : " + size);
+            return;
+        }
+
         if (mSamplesLastPos + size <= mSamples.length) {
             System.arraycopy(samples, offset, mSamples, mSamplesLastPos, size);
             mSamplesLastPos = mSamplesLastPos + size;

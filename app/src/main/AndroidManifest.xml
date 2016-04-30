@@ -38,7 +38,6 @@
         </activity>
         <activity
             android:name=".PositioningActivity"
-            android:parentActivityName="kr.ac.snu.boncoeur2016.LoginActivity"
             android:screenOrientation="sensor">
         </activity>
         <activity

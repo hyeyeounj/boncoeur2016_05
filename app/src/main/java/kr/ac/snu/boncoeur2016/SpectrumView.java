@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -90,6 +91,12 @@ public class SpectrumView extends View {
     }
 
     public void setSamples(short[] samples, int offset, int size) {
+
+        if (size <= 0) {
+            Log.i("WaveFormView", "Recording Error : " + size);
+            return;
+        }
+
         if (mSamplesLastPos + size <= mSamples.length) {
             System.arraycopy(samples, offset, mSamples, mSamplesLastPos, size);
             mSamplesLastPos = mSamplesLastPos + size;
