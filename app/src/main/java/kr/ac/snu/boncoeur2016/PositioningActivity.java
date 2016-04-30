@@ -48,7 +48,11 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     RecordItem recordItem;
     MediaPlayer player;
     ProgressDialog progressDialog;
-    int id;
+    int id, realId;
+    float idx;
+    String name;
+    double[][] rect = {{0.55, 0.6}, {0.65, 0.35}, {0.4, 0.3}, {0.75, 0.7}};
+    DragListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +61,9 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         setContentView(R.layout.activity_position);
         context = this;
 
+        idx = getResources().getDimension(R.dimen.position_button_size);
         Intent intent = getIntent();
         id = intent.getIntExtra("id", 0);
-        Log.d("test", "onCreate() id: " + id);
 
         back = (RelativeLayout)findViewById(R.id.back);
         patient_name = (TextView)findViewById(R.id.patient_info);
@@ -73,7 +77,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         m = (ImageView)findViewById(R.id.pos_m);
 
         ImageView[] pos = {t, p, a, m};
-        double[][] rect = {{0.2, 0.2}, {0.3, 0.3}, {0.4, 0.4}, {0.5, 0.5}};
+
 
         back.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
 
@@ -90,6 +94,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
 
+                Log.d("test", "onLayoutchange!");
                 int width = right - left;
                 int height = bottom - top;
 
@@ -147,8 +152,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         a.setOnLongClickListener(this);
         m.setOnLongClickListener(this);
 
-        DragListener listener = new DragListener();
-        back.setOnDragListener(listener);
+
 
         container = (RelativeLayout)findViewById(R.id.pos_message_container);
         play_container = (RelativeLayout)findViewById(R.id.play_container);
@@ -211,37 +215,37 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
 
         switch(v.getId()){
             case R.id.pos_m:
-                container.layout(x, y, x + 300, y + 300);
+                container.layout(x, y, x + (int)idx *2, y + (int)idx *2);
                 container.setVisibility(View.VISIBLE);
                 checkVisibility();
-                play_container.layout(x, y + 300, x + 300, y + 600);
+                play_container.layout(x, y + (int)idx *2, x + (int)idx *2, y + (int)idx *3);
                 checkPlayData(Define.POS_TAG_M);
                 pos_m.setVisibility(View.VISIBLE);
                 position = Define.POS_TAG_M;
                 break;
             case R.id.pos_p:
-                container.layout(x, y, x + 300, y + 300);
+                container.layout(x, y, x + (int)idx *2, y + (int)idx *2);
                 container.setVisibility(View.VISIBLE);
                 checkVisibility();
-                play_container.layout(x, y + 300, x + 300, y + 600);
+                play_container.layout(x, y + (int)idx *2, x + (int)idx *2, y + (int)idx *3);
                 checkPlayData(Define.POS_TAG_P);
                 pos_p.setVisibility(View.VISIBLE);
                 position = Define.POS_TAG_P;
                 break;
             case R.id.pos_a:
-                container.layout(x, y, x + 300, y + 300);
+                container.layout(x, y, x + (int)idx *2, y + (int)idx *2);
                 container.setVisibility(View.VISIBLE);
                 checkVisibility();
-                play_container.layout(x, y + 300, x + 300, y + 600);
+                play_container.layout(x, y + (int)idx *2, x + (int)idx *2, y + (int)idx *3);
                 checkPlayData(Define.POS_TAG_A);
                 pos_a.setVisibility(View.VISIBLE);
                 position = Define.POS_TAG_A;
                 break;
             case R.id.pos_t:
-                container.layout(x, y, x + 300, y + 300);
+                container.layout(x, y, x + (int)idx *2, y + (int)idx *2);
                 container.setVisibility(View.VISIBLE);
                 checkVisibility();
-                play_container.layout(x, y + 300, x + 300, y + 600);
+                play_container.layout(x, y + (int)idx *2, x + (int)idx *2, y + (int)idx *3);
                 checkPlayData(Define.POS_TAG_T);
                 pos_t.setVisibility(View.VISIBLE);
                 position = Define.POS_TAG_T;
@@ -423,7 +427,16 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     @Override
     protected void onResume() {
         super.onResume();
+
+        Log.d("test", "onResume!");
+        getXYPosition();
         dataCheck();
+        DragListener listener = new DragListener(context, name, realId);
+        back.setOnDragListener(listener);
+    }
+
+    private void getXYPosition() {
+        //position가져와서 배열 값 갱신 dao.
     }
 
     private void dataCheck() {
@@ -431,14 +444,19 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
 
         if(dao.getRecentId() > id){
             recordItem = dao.getRcordById(id);
+            realId = id;
             Log.d("test", "샌드에서 오는 id: " + id);
         }else if(dao.getRecentId() != id) {
             recordItem = dao.getRcordById(dao.getRecentId());
+            realId = dao.getRecentId();
             Log.d("test", "최신 id(저장중): " + id);
         }else if(dao.getRecentId() == id){
             recordItem = dao.getRcordById(dao.getRecentId());
+            realId = dao.getRecentId();
         }
-            patient_name.setText("name: " + recordItem.getName() + " (" + recordItem.getAge() + ")");
+        name = recordItem.getName();
+        patient_name.setText("name: " + name + " (" + recordItem.getAge() + ")");
+
 
         if(!recordItem.getRecordFile1().equals("")){
             changeColor(a);

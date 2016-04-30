@@ -45,6 +45,26 @@ public class Dao {
             Log.e("test", "CREATE TABLE FAILED! - " + e);
             e.printStackTrace();
         }
+
+        try{
+            String sql = "CREATE TABLE IF NOT EXISTS  Position(ID integer primary key,"
+                    + "Name text not null,"
+                    + "Age text not null,"
+                    + "tx real,"
+                    + "ty real,"
+                    + "px text,"
+                    + "py text,"
+                    + "ax text,"
+                    + "ay text,"
+                    + "mx text,"
+                    + "my text);";
+
+            database.execSQL(sql);
+
+        }catch(Exception e){
+            Log.e("test", "CREATE TABLE FAILED! - " + e);
+            e.printStackTrace();
+        }
     }
 
 
@@ -292,62 +312,6 @@ public class Dao {
             e.printStackTrace();
         }
     }
-//
-//    public void updateData1(String audio, String name, int id) {
-//
-//
-//        String sql = "UPDATE Record SET audio1='" +  audio +  "' where name = '" + name +"' and id = "+ id +";";
-//
-//        try {
-//            database.execSQL(sql);
-//            Log.i("test", sql);
-//        } catch (Exception e) {
-//            Log.e("test", "DB error! - " + e);
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public void updateData2(String audio, String name, int id) {
-//
-//
-//        String sql = "UPDATE Record SET audio2= '" +  audio +  "'where name = '"+ name +"' and id = "+ id +";";
-//
-//        try {
-//            database.execSQL(sql);
-//            Log.i("test", sql);
-//        } catch (Exception e) {
-//            Log.e("test", "DB error! - " + e);
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public void updateData3(String audio, String name, int id) {
-//
-//
-//        String sql = "UPDATE Record SET audio3= '" +  audio +  "' where name = '"+ name+ "' and id = "+ id +";";
-//
-//        try {
-//            database.execSQL(sql);
-//            Log.i("test", sql);
-//        } catch (Exception e) {
-//            Log.e("test", "DB error! - " + e);
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public void updateData4(String audio, String name, int id) {
-//
-//
-//        String sql = "UPDATE Record SET audio4= '" +  audio +  "' where name = '"+ name +"' and id = "+ id +";";
-//
-//        try {
-//            database.execSQL(sql);
-//            Log.i("test", sql);
-//        } catch (Exception e) {
-//            Log.e("test", "DB error! - " + e);
-//            e.printStackTrace();
-//        }
-//    }
 
     public void updateEmail(String email, String name, int id) {
 
@@ -378,4 +342,49 @@ public class Dao {
             e.printStackTrace();
         }
     }
+
+    public void positionInsert(String name, int age) {
+
+
+        String sql = "INSERT INTO Position (Name, Age, tx, ty, px, py, ax, ay, mx, my)"
+                + "VALUES('" + name +  "'," + age + ",'" + 0.55 + "','" + 0.6 + "','"
+                + 0.65 + "','" + 0.35 + "','" + 0.4 + "','" + 0.3 + "','" + 0.75 + "','" + 0.7 + "');";
+
+        try {
+            database.execSQL(sql);
+            Log.i("test", "POSITION TABLE CREATED!!!!!!!" + name + ", " + age);
+        } catch (Exception e) {
+            Log.e("test", "DB error! - " + e);
+            e.printStackTrace();
+        }
+
+    }
+
+    public void updatePosition(String position, double x, double y, String name, int id) {
+
+        String[][] posStr = {{"ax", "ay"}, {"px", "py"}, {"tx", "ty"}, {"mx", "my"}};
+        int pos = -1;
+        for (int i = 0; i < 4; i++)
+            if (position.equals(Define.POS_TAG[i])) {
+                pos = i;
+                break;
+            }
+        if (pos == -1) {
+            Log.e("Dao", "Undefined Position : " + position);
+            // Otherwise...save on 5, 6, etc...
+            return;
+        }
+
+        String sql = "UPDATE Position SET " + posStr[pos][0] + "='" + x + "', " + posStr[pos][1] + "='" + y + "' where name = '" + name + "' and id = " + id + ";";
+        Log.d("test", "UPDATE POS " + sql);
+        try {
+            database.execSQL(sql);
+            Log.i("test", sql);
+        } catch (Exception e) {
+            Log.e("test", "DB error! - " + e);
+            e.printStackTrace();
+        }
+    }
+
+
 }

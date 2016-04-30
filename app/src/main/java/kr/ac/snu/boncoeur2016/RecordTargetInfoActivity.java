@@ -70,6 +70,7 @@ public class RecordTargetInfoActivity extends AppCompatActivity {
 
                         Dao dao = new Dao(getApplicationContext());
                         dao.targetInsert(target_name, target_age);
+                        dao.positionInsert(target_name, target_age);
 
                         Intent intent = new Intent(getApplicationContext(), PositioningActivity.class);
                         intent.putExtra("id", Define.REVISION);
