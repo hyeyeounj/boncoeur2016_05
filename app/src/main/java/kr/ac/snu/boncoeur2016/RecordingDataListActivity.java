@@ -540,7 +540,7 @@
 //        protected void onResume() {
 //            super.onResume();
 //            Dao dao = new Dao(this);
-//            record =  dao.getRcordById(id);
+//            record =  dao.getRecordById(id);
 //            Log.i("test", "List~onResume~~~:" + record.getName() + ", " + record.getPos1());
 //
 //            pic1.setImageBitmap(loadCaptureView(record.getCaptureFile1()));

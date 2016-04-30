@@ -27,8 +27,6 @@ public class RecordItem {
         this.pos[2] = pos3;
         this.recordFile[3] = recordFile4;
         this.pos[3] = pos4;
-
-
     }
 
     public String getName() {

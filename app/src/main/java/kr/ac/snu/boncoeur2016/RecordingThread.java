@@ -66,6 +66,12 @@ public class RecordingThread {
     public void stopSave() {
 
         mShouldStop = true;
+
+        Log.d("test", "ID" + id);
+        Dao dao = new Dao(context);
+        RecordItem record = dao.getRecordById(id);
+        dao.updateData(position, filePath, record.getName(), id);
+        Log.d("test", "ID!!!!!!!!!! " + id + record.getName() + filePath);
     }
 
     public void startAcquisition(int id, String position) {
@@ -85,24 +91,13 @@ public class RecordingThread {
         mThread.start();
     }
 
-    public void stopAcquisition(int id) {
+    public void stopAcquisition() {
 
         if (mThread == null)
             return;
 
-        if(id == Define.PAUSE){
-            mShouldContinue = false;
-            mThread = null;
-        }else{
-            Log.d("test", "ID" + id);
-            Dao dao = new Dao(context);
-            RecordItem record = dao.getRcordById(id);
-
-            dao.updateData(position, filePath, record.getName(), id);
-            Log.d("test", "ID!!!!!!!!!! "+ id + record.getName() + filePath);
-            mShouldContinue = false;
-            mThread = null;
-        }
+        mShouldContinue = false;
+        mThread = null;
     }
 
     private byte[] short2byte(short[] sData, int len) {
@@ -211,7 +206,7 @@ public class RecordingThread {
 
                     outBuffInfo = new MediaCodec.BufferInfo();
 
-                    filePath = new Dao(context).getRcordById(id).getRecordFile(position);
+                    filePath = new Dao(context).getRecordById(id).getRecordFile(position);
                     if (filePath != null && !filePath.equals((""))) {
                         File f = new File(filePath);
                         if (f.exists())
