@@ -27,10 +27,7 @@ import kr.ac.snu.boncoeur2016.utils.Define;
  * Created by hyes on 2016. 3. 25..
  */
 public class RecordingThread {
-    private static final int SAMPLE_RATE = 8000;
-    private static final String COMPRESSED_AUDIO_FILE_MIME_TYPE = "audio/mp4a-latm";
-    private static final int COMPRESSED_AUDIO_FILE_BIT_RATE = 48000; // 48kbps
-    private static final int COMPRESSED_AUDIO_SAMPLE_RATE = 8000;
+
     SimpleDateFormat timestamp;
     Context context;
     String position;
@@ -118,22 +115,22 @@ public class RecordingThread {
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
 
         // buffer size in bytes
-        int bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE,
+        int bufferSize = AudioRecord.getMinBufferSize(Define.SAMPLE_RATE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
 
         if (bufferSize == AudioRecord.ERROR || bufferSize == AudioRecord.ERROR_BAD_VALUE) {
-            bufferSize = SAMPLE_RATE * 2;
+            bufferSize = Define.SAMPLE_RATE * 2;
         }
 //        byte audioData[] = new byte[bufferSize];
 //        short[] audioBuffer = new short[bufferSize / 8];
-        short[] audioBuffer = new short[SAMPLE_RATE / 15];
-        int drawBuffer = SAMPLE_RATE / 60;
+        short[] audioBuffer = new short[Define.SAMPLE_RATE / 15];
+        int drawBuffer = Define.SAMPLE_RATE / 60;
         long curTime = 0;
 //        short[] audioBuffer = new short[bufferSize * 2 ];
 
         AudioRecord record = new AudioRecord(MediaRecorder.AudioSource.MIC,
-                SAMPLE_RATE,
+                Define.SAMPLE_RATE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
                 bufferSize);
@@ -153,9 +150,9 @@ public class RecordingThread {
 
         AudioTrack at = null;
         try {
-            at = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLE_RATE,
+            at = new AudioTrack(AudioManager.STREAM_MUSIC, Define.SAMPLE_RATE,
                     AudioFormat.CHANNEL_OUT_MONO,
-                    AudioFormat.ENCODING_PCM_16BIT, AudioTrack.getMinBufferSize(SAMPLE_RATE,
+                    AudioFormat.ENCODING_PCM_16BIT, AudioTrack.getMinBufferSize(Define.SAMPLE_RATE,
                     AudioFormat.CHANNEL_OUT_MONO,
                     AudioFormat.ENCODING_PCM_16BIT),
 //                    AudioTrack.MODE_STATIC);
@@ -191,13 +188,13 @@ public class RecordingThread {
 
                     if (at != null)
                         at.setStereoVolume(0f, 0f);
-                    outputFormat = MediaFormat.createAudioFormat(COMPRESSED_AUDIO_FILE_MIME_TYPE,
-                            COMPRESSED_AUDIO_SAMPLE_RATE, 1);
+                    outputFormat = MediaFormat.createAudioFormat(Define.COMPRESSED_AUDIO_FILE_MIME_TYPE,
+                            Define.COMPRESSED_AUDIO_SAMPLE_RATE, 1);
                     outputFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
-                    outputFormat.setInteger(MediaFormat.KEY_BIT_RATE, COMPRESSED_AUDIO_FILE_BIT_RATE);
+                    outputFormat.setInteger(MediaFormat.KEY_BIT_RATE, Define.COMPRESSED_AUDIO_FILE_BIT_RATE);
                     outputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1);
 
-                    codec = MediaCodec.createEncoderByType(COMPRESSED_AUDIO_FILE_MIME_TYPE);
+                    codec = MediaCodec.createEncoderByType(Define.COMPRESSED_AUDIO_FILE_MIME_TYPE);
                     codec.configure(outputFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
                     codec.start();
 
@@ -247,7 +244,7 @@ public class RecordingThread {
                 curTime = System.currentTimeMillis();
                 numberOfShort += nRead;
                 if (mNowSaving)
-                    ra.record_btn.setCurrentPercentage(50000.0 * (totalBytesRead + numberOfShort) / (SAMPLE_RATE * Define.SHORT_TIME));
+                    ra.record_btn.setCurrentPercentage(50000.0 * (totalBytesRead + numberOfShort) / (Define.SAMPLE_RATE * Define.SHORT_TIME));
             }
 //            Log.i("RecordingThread", "numberOfShort : " + numberOfShort);
             shortsRead += numberOfShort;
@@ -285,8 +282,8 @@ public class RecordingThread {
                                 processed += size;
                                 codec.queueInputBuffer(ind, 0, size, (long) presentationTimeUs, 0);
                                 Log.i("RecordingThread", "totalBytesRead : " + totalBytesRead);
+                                presentationTimeUs = 1000000L * (totalBytesRead / 2) / Define.SAMPLE_RATE;
                                 totalBytesRead += size;
-                                presentationTimeUs = 1000000L * (totalBytesRead / 2) / SAMPLE_RATE;
 
                                 if (processed != total)
                                     ind = codec.dequeueInputBuffer(0);
