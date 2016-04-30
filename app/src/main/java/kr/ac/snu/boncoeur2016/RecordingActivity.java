@@ -220,9 +220,6 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
                         @Override
                         public void run() {
 
-//                        listen_btn.setCurrentPercentage(50000.0 * (totalBytesRead + numberOfShort) / (SAMPLE_RATE * Define.SHORT_TIME));
-                            listen_btn.setCurrentPercentage(50);
-
                             recordingThread.stopAcquisition();
 
                             listen_btn.setText("TAP TO STOP PLAYING");
