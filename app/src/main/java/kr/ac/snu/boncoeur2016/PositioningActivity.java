@@ -430,13 +430,13 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         Log.d("test", "temp: id " + id + "recent " + dao.getRecentId());
 
         if(dao.getRecentId() > id){
-            recordItem = dao.getRcordById(id);
+            recordItem = dao.getRecordById(id);
             Log.d("test", "샌드에서 오는 id: " + id);
         }else if(dao.getRecentId() != id) {
-            recordItem = dao.getRcordById(dao.getRecentId());
+            recordItem = dao.getRecordById(dao.getRecentId());
             Log.d("test", "최신 id(저장중): " + id);
         }else if(dao.getRecentId() == id){
-            recordItem = dao.getRcordById(dao.getRecentId());
+            recordItem = dao.getRecordById(dao.getRecentId());
         }
             patient_name.setText("name: " + recordItem.getName() + " (" + recordItem.getAge() + ")");
 

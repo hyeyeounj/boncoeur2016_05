@@ -54,7 +54,7 @@ public class ProxyUp {
         // client.post("http://172.30.52.77:8000/submit", params, responseHandler);
         // client.post("http://192.168.2.72:8000/submit", params, responseHandler);
         // client.post("http://192.168.56.1:8000/submit", params, responseHandler);
-        client.post("Http://147.46.151.128:8000/submit", params, responseHandler);
+        client.post("Https://147.46.151.128:8000/submit", params, responseHandler);
 
 
 
