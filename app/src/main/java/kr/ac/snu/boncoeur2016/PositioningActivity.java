@@ -40,7 +40,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     Point offset = new Point(0, 0);
     RelativeLayout back;
     RelativeLayout container, play_container;
-    TextView pos_m, pos_p, pos_a, pos_t, patient_name, save;
+    TextView pos_m, pos_p, pos_a, pos_t, patient_name, save, back_btn;
     Dao dao;
     boolean playP, playT, playA, playM;
     Context context;
@@ -70,6 +70,8 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         patient_name = (TextView)findViewById(R.id.patient_info);
         save = (TextView)findViewById(R.id.save_data_btn);
         save.setOnClickListener(this);
+        back_btn = (TextView)findViewById(R.id.back_data_btn);
+        back_btn.setOnClickListener(this);
 
         t = (ImageView)findViewById(R.id.pos_t);
         p = (ImageView)findViewById(R.id.pos_p);
@@ -269,6 +271,11 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
             case R.id.save_data_btn:
                 checkInternetConnection();
                 break;
+            case R.id.back_data_btn:
+                Intent intent2 = new Intent(PositioningActivity.this, MenuActivity.class);
+                startActivity(intent2);
+                break;
+
         }
     }
 
