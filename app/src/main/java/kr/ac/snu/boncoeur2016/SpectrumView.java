@@ -5,19 +5,17 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.v4.content.ContextCompat;
-import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+
 /**
  * Created by hyes on 2016. 3. 25..
  */
-public class WaveFormView extends View {
+public class SpectrumView extends View {
 
-    private static final int nPlots = 6;
-
-    private TextPaint mTextPaint;
-    private Paint mStrokePaint, mFillPaint, mMarkerPaint;
+    private static final int nPlots = 3;
+    private Paint mStrokePaint;
 
     // Used in draw
     private int width, height;
@@ -27,17 +25,17 @@ public class WaveFormView extends View {
     private float[] plot = null;
     private float[] borders = null;
 
-    public WaveFormView(Context context) {
+    public SpectrumView(Context context) {
         super(context);
         init(context, null, 0);
     }
 
-    public WaveFormView(Context context, AttributeSet attrs) {
+    public SpectrumView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs, 0);
     }
 
-    public WaveFormView(Context context, AttributeSet attrs, int defStyle) {
+    public SpectrumView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context, attrs, defStyle);
     }
@@ -59,7 +57,7 @@ public class WaveFormView extends View {
         mStrokePaint.setStrokeWidth(strokeThickness);
         mStrokePaint.setAntiAlias(true);
 
-        mSamples = new short[4000 * nPlots];
+        mSamples = new short[8000 * nPlots];
     }
 
     @Override
@@ -83,11 +81,12 @@ public class WaveFormView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
 
-        super.onDraw(canvas);
+//        super.onDraw(canvas);
 
         if (plot != null) {
-            canvas.drawLines(plot, mStrokePaint);
-            canvas.drawLines(borders, mStrokePaint);
+            canvas.drawLine((float) Math.random() * getMeasuredWidth(), (float) Math.random() * getMeasuredHeight(), (float) Math.random() * getMeasuredWidth(), (float) Math.random() * getMeasuredHeight(), mStrokePaint);
+//            canvas.drawLines(plot, mStrokePaint);
+//            canvas.drawLines(borders, mStrokePaint);
         }
     }
 
@@ -116,37 +115,38 @@ public class WaveFormView extends View {
     }
 
     void drawRecordingWaveform(short[] buffer, float[] waveformPoints) {
-        float lastX = -1;
-        float lastY = -1;
-        int pointIndex = 0;
-        Short max = Short.MAX_VALUE;
 
-        // For efficiency, we don't draw all of the samples in the buffer, but only the ones
-        // that align with pixel boundaries.
-        for (int x = 0; x < width * nPlots; x++) {
-            int index1 = 0;
-            if (x != 0)
-                index1 = (int) (((x * 1.0f) / (width * nPlots)) * buffer.length);
-            int index2 = (int) (((x + 1 * 1.0f) / (width * nPlots)) * buffer.length);
-            if (index1 >= index2) {
-
-                if (index1 == 0)
-                    index2++;
-                else
-                    index1--;
-            }
-            int maxS = Short.MIN_VALUE, minS = Short.MAX_VALUE, minpos = 0, maxpos = 0;
-            for (int i = index1; i < index2; i++) {
-                if (maxS < buffer[i]) {
-                    maxS = buffer[i];
-                    maxpos = i;
-                }
-                if (minS > buffer[i]) {
-                    minS = buffer[i];
-                    minpos = i;
-                }
-            }
-            float y = 0;
+//        float lastX = -1;
+//        float lastY = -1;
+//        int pointIndex = 0;
+//        float max = Short.MAX_VALUE;
+//
+//        // For efficiency, we don't draw all of the samples in the buffer, but only the ones
+//        // that align with pixel boundaries.
+//        for (int x = 0; x < width * nPlots; x++) {
+//            int index1 = 0;
+//            if (x != 0)
+//                index1 = (int) (((x * 1.0f) / (width * nPlots)) * buffer.length);
+//            int index2 = (int) (((x + 1 * 1.0f) / (width * nPlots)) * buffer.length);
+//            if (index1 >= index2) {
+//
+//                if (index1 == 0)
+//                    index2++;
+//                else
+//                    index1--;
+//            }
+//            int maxS = Short.MIN_VALUE, minS = Short.MAX_VALUE, minpos = 0, maxpos = 0;
+//            for (int i = index1; i < index2; i++) {
+//                if (maxS < buffer[i]) {
+//                    maxS = buffer[i];
+//                    maxpos = i;
+//                }
+//                if (minS > buffer[i]) {
+//                    minS = buffer[i];
+//                    minpos = i;
+//                }
+//            }
+//            float y = 0;
 //            if (plotType == 0) {
 //                if (maxS < 0)
 //                    maxS = -maxS;
@@ -156,39 +156,31 @@ public class WaveFormView extends View {
 //                    maxS = minS;
 //                y = centerY - ((maxS / max) * centerY);
 //            } else if (plotType == 1) {
-                if (minS >= 0 && maxS >= 0 || maxS >= 0 && maxS >= -minS) {
-                    if (maxS > Short.MAX_VALUE / 2 )
-                        maxS = Short.MAX_VALUE / 2;
-                    maxS *= 2;
-                    y = centerY - maxS  * centerY / max;
-                }
-                else {
-                    if (minS < Short.MIN_VALUE / 2 )
-                        minS = Short.MIN_VALUE / 2;
-                    minS *= 2;
-                    y = centerY - minS * centerY / max;
-                }
+//                if (minS >= 0 && maxS >= 0 || maxS >= 0 && maxS >= -minS)
+//                    y = centerY - ((maxS / max) * centerY);
+//                else
+//                    y = centerY - ((minS / max) * centerY);
 //            }
-
-            y = y / nPlots + centerY / nPlots * (x / width) * 2;
-
-            if (lastX != -1) {
-                if (index1 <= mSamplesLastPos && mSamplesLastPos <= index2) {
-
-                    waveformPoints[pointIndex++] = x % width;
-                    waveformPoints[pointIndex++] = centerY / nPlots * (x / width) * 2;
-                    waveformPoints[pointIndex++] = x % width;
-                    waveformPoints[pointIndex++] = centerY * 2 / nPlots + centerY / nPlots * (x / width) * 2;
-                } else {
-
-                    if (x % width != 0) {
-
+//
+//            y = y / nPlots + centerY / nPlots * (x / width) * 2;
+//
+//            if (lastX != -1) {
+//                if (index1 <= mSamplesLastPos && mSamplesLastPos <= index2) {
+//
+//                    waveformPoints[pointIndex++] = x % width;
+//                    waveformPoints[pointIndex++] = centerY / nPlots * (x / width) * 2;
+//                    waveformPoints[pointIndex++] = x % width;
+//                    waveformPoints[pointIndex++] = centerY * 2 / nPlots + centerY / nPlots * (x / width) * 2;
+//                } else {
+//
+//                    if (x % width != 0) {
+//
 //                        if (plotMethod == 0) {
-
-                            waveformPoints[pointIndex++] = lastX;
-                            waveformPoints[pointIndex++] = lastY;
-                            waveformPoints[pointIndex++] = x % width;
-                            waveformPoints[pointIndex++] = y;
+//
+//                            waveformPoints[pointIndex++] = lastX;
+//                            waveformPoints[pointIndex++] = lastY;
+//                            waveformPoints[pointIndex++] = x % width;
+//                            waveformPoints[pointIndex++] = y;
 //                        } else if (plotMethod == 1) {
 //
 //                            if (minpos < maxpos) {
@@ -205,17 +197,17 @@ public class WaveFormView extends View {
 //                                waveformPoints[pointIndex++] = (centerY - ((minS / max) * centerY)) / nPlots + centerY / nPlots * (x / width) * 2;
 //                            }
 //                        }
-                    } else {
-                        waveformPoints[pointIndex++] = x % width;
-                        waveformPoints[pointIndex++] = y;
-                        waveformPoints[pointIndex++] = x % width;
-                        waveformPoints[pointIndex++] = y;
-                    }
-                }
-            }
-
-            lastX = x % width;
-            lastY = y;
-        }
+//                    } else {
+//                        waveformPoints[pointIndex++] = x % width;
+//                        waveformPoints[pointIndex++] = y;
+//                        waveformPoints[pointIndex++] = x % width;
+//                        waveformPoints[pointIndex++] = y;
+//                    }
+//                }
+//            }
+//
+//            lastX = x % width;
+//            lastY = y;
+//        }
     }
 }

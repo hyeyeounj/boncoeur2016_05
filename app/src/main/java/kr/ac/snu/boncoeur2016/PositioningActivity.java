@@ -51,6 +51,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_position);
         context = this;

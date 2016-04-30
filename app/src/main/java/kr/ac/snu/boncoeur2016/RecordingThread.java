@@ -96,20 +96,20 @@ public class RecordingThread {
             Dao dao = new Dao(context);
             RecordItem record = dao.getRcordById(id);
 
-            if(position.equals(Define.POS_TAG_A)){
-                dao.updateData1(filePath, record.getName(), id);
-            }else if(position.equals(Define.POS_TAG_P)){
-                dao.updateData2(filePath, record.getName(), id);
-            }else if(position.equals(Define.POS_TAG_T)){
-                dao.updateData3(filePath, record.getName(), id);
-            }else if(position.equals(Define.POS_TAG_M)){
-                dao.updateData4(filePath, record.getName(), id);
-            }
+            dao.updateData(position, filePath, record.getName(), id);
+//            if(position.equals(Define.POS_TAG_A)){
+//                dao.updateData1(filePath, record.getName(), id);
+//            }else if(position.equals(Define.POS_TAG_P)){
+//                dao.updateData2(filePath, record.getName(), id);
+//            }else if(position.equals(Define.POS_TAG_T)){
+//                dao.updateData3(filePath, record.getName(), id);
+//            }else if(position.equals(Define.POS_TAG_M)){
+//                dao.updateData4(filePath, record.getName(), id);
+//            }
             Log.d("test", "ID!!!!!!!!!! "+ id + record.getName() + filePath);
             mShouldContinue = false;
             mThread = null;
         }
-
     }
 
     private byte[] short2byte(short[] sData, int len) {
@@ -155,15 +155,6 @@ public class RecordingThread {
             return;
         }
         record.startRecording();
-
-        timestamp = new SimpleDateFormat("yyyyMMddHHmmss");
-        filePath = Define.RECORDED_FILEPATH + position + "_" + timestamp.format(new Date()) + "REC.";
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            filePath += "mp4";
-        } else {
-            filePath += "aac";
-        }
-        //사용할 수 없는 파일 형식 ;; 확인
 
 /*        BufferedOutputStream os = null;
         try {
@@ -226,6 +217,15 @@ public class RecordingThread {
                     codecOutputBuffers = codec.getOutputBuffers();
 
                     outBuffInfo = new MediaCodec.BufferInfo();
+
+                    timestamp = new SimpleDateFormat("yyyyMMddHHmmss");
+                    filePath = Define.RECORDED_FILEPATH + position + "_" + timestamp.format(new Date()) + "REC.";
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        filePath += "mp4";
+                    } else {
+                        filePath += "aac";
+                    }
+                    //사용할 수 없는 파일 형식 ;; 확인
 
                     File f = new File(filePath);
                     if (f.exists())
