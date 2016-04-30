@@ -233,7 +233,7 @@ public class Dao {
         return id;
     }
 
-    public RecordItem getRcordById(int i){
+    public RecordItem getRecordById(int i) {
 
         String sql = "SELECT * FROM Record where id = " + i + ";";
         RecordItem record =null;
