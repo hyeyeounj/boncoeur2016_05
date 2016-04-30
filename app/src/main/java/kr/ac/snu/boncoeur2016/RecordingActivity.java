@@ -146,6 +146,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
                 goToPosition();
                 break;
             case R.id.listen_btn:
+
                 new Thread() {
 
                     public Thread init() {
