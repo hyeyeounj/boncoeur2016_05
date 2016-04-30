@@ -52,12 +52,12 @@ public class Dao {
                     + "Age text not null,"
                     + "tx real,"
                     + "ty real,"
-                    + "px text,"
-                    + "py text,"
-                    + "ax text,"
-                    + "ay text,"
-                    + "mx text,"
-                    + "my text);";
+                    + "px real,"
+                    + "py real,"
+                    + "ax real,"
+                    + "ay real,"
+                    + "mx real,"
+                    + "my real);";
 
             database.execSQL(sql);
 
@@ -352,7 +352,6 @@ public class Dao {
 
         try {
             database.execSQL(sql);
-            Log.i("test", "POSITION TABLE CREATED!!!!!!!" + name + ", " + age);
         } catch (Exception e) {
             Log.e("test", "DB error! - " + e);
             e.printStackTrace();
@@ -376,15 +375,49 @@ public class Dao {
         }
 
         String sql = "UPDATE Position SET " + posStr[pos][0] + "='" + x + "', " + posStr[pos][1] + "='" + y + "' where name = '" + name + "' and id = " + id + ";";
-        Log.d("test", "UPDATE POS " + sql);
+
         try {
             database.execSQL(sql);
-            Log.i("test", sql);
+            Log.i("test", "UPDATE POS "+sql);
         } catch (Exception e) {
             Log.e("test", "DB error! - " + e);
             e.printStackTrace();
         }
     }
 
+    public double[][] getPosition(int i) {
 
+        String sql = "SELECT * FROM Position where id = " + i + ";";
+        double[][] position = new double[4][2];
+
+        try {
+            database.execSQL(sql);
+            Log.i("test", sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        Log.d( "testtesttest", "asdf");
+
+        Cursor cursor = database.rawQuery(sql, null);
+
+
+        while (cursor.moveToNext()) {
+
+            int l = 3;
+            for(int j = 0; j < 4; j++) {
+                for (int k = 0; k < 2; k++) {
+
+                    position[j][k] = cursor.getFloat(l);
+                    Log.d("test", "j : " + j + ", k: " + k + " , l: "+ l);
+                    l++;
+                }
+            }
+        }
+
+        cursor.close();
+        Log.d("test", "00 : "+position[0][0] +  ", 01 : "+position[0][1] + ", 10 : "+position[1][0] +  ", 11 : "+position[1][1] +", 20 : "+position[2][0] +  ", 20 : "+position[2][0] );
+
+        return position;
+    }
 }

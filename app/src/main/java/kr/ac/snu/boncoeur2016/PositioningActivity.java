@@ -51,8 +51,9 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     int id, realId;
     float idx;
     String name;
-    double[][] rect = {{0.55, 0.6}, {0.65, 0.35}, {0.4, 0.3}, {0.75, 0.7}};
-    DragListener listener;
+    double[][] rect;
+//    double[][] rect = {{0.55, 0.6}, {0.65, 0.35}, {0.4, 0.3}, {0.75, 0.7}};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,11 +71,17 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         save = (TextView)findViewById(R.id.save_data_btn);
         save.setOnClickListener(this);
 
-        dao = new Dao(this);
         t = (ImageView)findViewById(R.id.pos_t);
         p = (ImageView)findViewById(R.id.pos_p);
         a = (ImageView)findViewById(R.id.pos_a);
         m = (ImageView)findViewById(R.id.pos_m);
+
+        dao = new Dao(this);
+        dataCheck();
+        rect = dao.getPosition(realId);
+        DragListener listener = new DragListener(context, name, realId, back);
+        back.setOnDragListener(listener);
+
 
         ImageView[] pos = {t, p, a, m};
 
@@ -429,15 +436,10 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         super.onResume();
 
         Log.d("test", "onResume!");
-        getXYPosition();
-        dataCheck();
-        DragListener listener = new DragListener(context, name, realId);
-        back.setOnDragListener(listener);
+
+
     }
 
-    private void getXYPosition() {
-        //position가져와서 배열 값 갱신 dao.
-    }
 
     private void dataCheck() {
         Log.d("test", "temp: id " + id + "recent " + dao.getRecentId());
@@ -445,7 +447,7 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
         if(dao.getRecentId() > id){
             recordItem = dao.getRcordById(id);
             realId = id;
-            Log.d("test", "샌드에서 오는 id: " + id);
+            Log.d("test", "send> id: " + id);
         }else if(dao.getRecentId() != id) {
             recordItem = dao.getRcordById(dao.getRecentId());
             realId = dao.getRecentId();
