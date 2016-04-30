@@ -125,7 +125,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
                 public void run() {
                     if (recordingThread.isRecording()) {
                         recordingThread.stopSave();
-                        record_btn.setText("RECORD AGAIN");
+                        record_btn.setText(getResources().getString(R.string.record_again));
                         record_btn.setEnabled(true);
                         record_btn.setFocusable(true);
                         next_btn.setVisibility(View.VISIBLE);
@@ -167,7 +167,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
                         if (f.exists())
                             f.delete();
                     }
-                    record_btn.setText("RECORD");
+                    record_btn.setText(getResources().getString(R.string.record));
                     record_btn.setFocusable(true);
                     next_btn.setVisibility(View.GONE);
                     listen_btn.setVisibility(View.GONE);
@@ -198,7 +198,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
                             f.delete();
                     }
                     startAudioRecordingSafe();
-                    record_btn.setText("Long-press to Stop");
+                    record_btn.setText(getResources().getString(R.string.record_stop));
                     record_btn.setFocusable(false);
                     next_btn.setVisibility(View.GONE);
                     listen_btn.setVisibility(View.GONE);
@@ -222,7 +222,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
 
                             recordingThread.stopAcquisition();
 
-                            listen_btn.setText("TAP TO STOP PLAYING");
+                            listen_btn.setText(getResources().getString(R.string.record_stop));
                             record_btn.setVisibility(View.GONE);
                             next_btn.setVisibility(View.GONE);
 
@@ -399,7 +399,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
                                             at.release();
                                             recordingThread.startAcquisition(id, position);
                                             listen_btn.setCurrentPercentage(0);
-                                            listen_btn.setText("LISTEN");
+                                            listen_btn.setText(getResources().getString(R.string.listen));
                                             record_btn.setVisibility(View.VISIBLE);
                                             next_btn.setVisibility(View.VISIBLE);
                                         }
