@@ -2,7 +2,6 @@ package kr.ac.snu.boncoeur2016;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
@@ -78,17 +77,17 @@ public class SpectrumView extends View {
         }
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-
-//        super.onDraw(canvas);
-
-        if (plot != null) {
-            canvas.drawLine((float) Math.random() * getMeasuredWidth(), (float) Math.random() * getMeasuredHeight(), (float) Math.random() * getMeasuredWidth(), (float) Math.random() * getMeasuredHeight(), mStrokePaint);
+//    @Override
+//    protected void onDraw(Canvas canvas) {
+//
+////        super.onDraw(canvas);
+//
+//        if (plot != null) {
+//            canvas.drawLine((float) Math.random() * getMeasuredWidth(), (float) Math.random() * getMeasuredHeight(), (float) Math.random() * getMeasuredWidth(), (float) Math.random() * getMeasuredHeight(), mStrokePaint);
 //            canvas.drawLines(plot, mStrokePaint);
 //            canvas.drawLines(borders, mStrokePaint);
-        }
-    }
+//        }
+//    }
 
     public void setSamples(short[] samples, int offset, int size) {
 
@@ -110,12 +109,12 @@ public class SpectrumView extends View {
 
     private void onSamplesChanged() {
 
-        drawRecordingWaveform(mSamples, plot);
+//        drawRecordingWaveform(mSamples, plot);
         postInvalidate();
     }
 
-    void drawRecordingWaveform(short[] buffer, float[] waveformPoints) {
-
+//    void drawRecordingWaveform(short[] buffer, float[] waveformPoints) {
+//
 //        float lastX = -1;
 //        float lastY = -1;
 //        int pointIndex = 0;
@@ -209,5 +208,5 @@ public class SpectrumView extends View {
 //            lastX = x % width;
 //            lastY = y;
 //        }
-    }
+//    }
 }

@@ -135,27 +135,15 @@ public class WaveFormView extends View {
                 else
                     index1--;
             }
-            int maxS = Short.MIN_VALUE, minS = Short.MAX_VALUE, minpos = 0, maxpos = 0;
+            int maxS = Short.MIN_VALUE, minS = Short.MAX_VALUE;
             for (int i = index1; i < index2; i++) {
-                if (maxS < buffer[i]) {
+                if (maxS < buffer[i])
                     maxS = buffer[i];
-                    maxpos = i;
-                }
-                if (minS > buffer[i]) {
+                if (minS > buffer[i])
                     minS = buffer[i];
-                    minpos = i;
-                }
             }
-            float y = 0;
-//            if (plotType == 0) {
-//                if (maxS < 0)
-//                    maxS = -maxS;
-//                if (minS < 0)
-//                    minS = -minS;
-//                if (maxS < minS)
-//                    maxS = minS;
-//                y = centerY - ((maxS / max) * centerY);
-//            } else if (plotType == 1) {
+            float y;
+
             if (minS >= 0 && maxS >= 0 || maxS >= 0 && maxS >= -minS) {
                 if (maxS > Short.MAX_VALUE / 2)
                     maxS = Short.MAX_VALUE / 2;

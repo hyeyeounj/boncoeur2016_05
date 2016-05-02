@@ -101,7 +101,6 @@ public class DragListener implements View.OnDragListener {
         Dao dao = new Dao(context);
         reCalc(x, y);
         dao.updatePosition(dragData, reX, reY, name, id);
-
     }
 
     private void reCalc(float x, float y) {

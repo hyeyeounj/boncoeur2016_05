@@ -203,10 +203,6 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
                     next_btn.setVisibility(View.GONE);
                     listen_btn.setVisibility(View.GONE);
                     Log.d("test", "record start");
-                } else {
-//                    recordingThread.stopAcquisition();
-//                    record_btn.setText("RECORD");
-//                    Log.d("test", "record stop");
                 }
                 break;
             case R.id.next_btn:
@@ -283,9 +279,9 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
                                         }
                                         processed += size;
                                         if (processed == total)
-                                            codec.queueInputBuffer(ind, 0, size, (long) presentationTimeUs, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+                                            codec.queueInputBuffer(ind, 0, size, presentationTimeUs, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
                                         else
-                                            codec.queueInputBuffer(ind, 0, size, (long) presentationTimeUs, 0);
+                                            codec.queueInputBuffer(ind, 0, size, presentationTimeUs, 0);
                                         Log.i("RecordingThread", "totalBytesRead : " + totalBytesRead);
                                         presentationTimeUs = 1000000L * (totalBytesRead / 2) / Define.SAMPLE_RATE;
                                         totalBytesRead += size;
@@ -297,13 +293,13 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
                                     ind = codec.dequeueOutputBuffer(outBuffInfo, 0);
                                     Log.i("RecordingActivity", "Middle While : " + ind);
 
-                                    MediaFormat outputFormat = codec.getOutputFormat();
+//                                    MediaFormat outputFormat = codec.getOutputFormat();
 
                                     if (ind < 0) {
-                                        if (ind == MediaCodec.INFO_TRY_AGAIN_LATER) {
+                                        if (ind == MediaCodec.INFO_TRY_AGAIN_LATER)
                                             this.sleep(10);
-                                        } else if (ind == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED)
-                                            outputFormat = codec.getOutputFormat();
+//                                        else if (ind == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED)
+//                                            outputFormat = codec.getOutputFormat();
                                         else if (ind == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED)
                                             codecOutputBuffers = codec.getOutputBuffers();
                                         ind = codec.dequeueOutputBuffer(outBuffInfo, 0);
@@ -408,9 +404,7 @@ public class RecordingActivity extends AppCompatActivity implements View.OnClick
                                 if (handler == null)
                                     handler = new Handler();
                                 handler.postDelayed(playStopThread, Define.SHORT_TIME);
-                            } catch (IOException ioe) {
-                                ioe.printStackTrace();
-                            } catch (InterruptedException e) {
+                            } catch (IOException | InterruptedException e) {
                                 e.printStackTrace();
                             }
                         }

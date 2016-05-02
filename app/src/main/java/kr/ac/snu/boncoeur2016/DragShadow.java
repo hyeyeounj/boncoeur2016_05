@@ -14,12 +14,10 @@ public class DragShadow extends View.DragShadowBuilder {
 
     private static Drawable shadow;
 
-
     public DragShadow(View v) {
         super(v);
         shadow = new ColorDrawable(Color.LTGRAY);
     }
-
 
     @Override
     public void onProvideShadowMetrics (Point size, Point touch){

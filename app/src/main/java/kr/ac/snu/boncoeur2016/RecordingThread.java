@@ -126,7 +126,6 @@ public class RecordingThread {
 //        short[] audioBuffer = new short[bufferSize / 8];
         short[] audioBuffer = new short[Define.SAMPLE_RATE / 15];
         int drawBuffer = Define.SAMPLE_RATE / 60;
-        long curTime = 0;
 //        short[] audioBuffer = new short[bufferSize * 2 ];
 
         AudioRecord record = new AudioRecord(MediaRecorder.AudioSource.MIC,
@@ -241,7 +240,6 @@ public class RecordingThread {
                     nRead = record.read(audioBuffer, numberOfShort, audioBuffer.length - numberOfShort);
                 mListener.onAudioDataReceived(audioBuffer, numberOfShort, nRead);
 //                Log.i("RecordingThread", "Drawing Time : " + (int) (System.currentTimeMillis() - curTime));
-                curTime = System.currentTimeMillis();
                 numberOfShort += nRead;
                 if (mNowSaving)
                     ra.record_btn.setCurrentPercentage(50000.0 * (totalBytesRead + numberOfShort) / (Define.SAMPLE_RATE * Define.SHORT_TIME));
