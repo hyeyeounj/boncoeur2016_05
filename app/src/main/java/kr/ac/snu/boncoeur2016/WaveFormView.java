@@ -9,6 +9,9 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+
+import kr.ac.snu.boncoeur2016.utils.Define;
+
 /**
  * Created by hyes on 2016. 3. 25..
  */
@@ -59,7 +62,7 @@ public class WaveFormView extends View {
         mStrokePaint.setStrokeWidth(strokeThickness);
         mStrokePaint.setAntiAlias(true);
 
-        mSamples = new short[4000 * nPlots];
+        mSamples = new short[Define.SAMPLE_RATE / 2 * nPlots];
     }
 
     @Override
