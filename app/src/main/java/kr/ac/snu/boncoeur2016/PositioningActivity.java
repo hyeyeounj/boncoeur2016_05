@@ -51,8 +51,8 @@ public class PositioningActivity extends AppCompatActivity implements View.OnLon
     int id, realId;
     float idx;
     String name;
-    double[][] rect;
-//    double[][] rect = {{0.55, 0.6}, {0.65, 0.35}, {0.4, 0.3}, {0.75, 0.7}};
+    //    double[][] rect;
+    double[][] rect = {{0.55, 0.6}, {0.65, 0.35}, {0.4, 0.3}, {0.75, 0.7}};
 
 
     @Override
