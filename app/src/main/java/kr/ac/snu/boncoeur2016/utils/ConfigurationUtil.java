@@ -2,6 +2,7 @@ package kr.ac.snu.boncoeur2016.utils;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -15,22 +16,23 @@ public class ConfigurationUtil {
 
     public static int getH(Context context){
         DisplayMetrics metrics = new DisplayMetrics();
-        ((WindowManager)context.getSystemService(context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(metrics);
+        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(metrics);
         return metrics.heightPixels;
     }
 
     public static int getW(Context context){
         DisplayMetrics metrics = new DisplayMetrics();
-        ((WindowManager)context.getSystemService(context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(metrics);
+        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(metrics);
         return metrics.widthPixels;
     }
 
-
     public static void check(Context context){
-        Display display = ((WindowManager)context.getSystemService(context.WINDOW_SERVICE)).getDefaultDisplay();
-        String displayName = display.getName();  // minSdkVersion=17+
-        Log.i(TAG, "displayName  = " + displayName);
+        Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            String displayName = display.getName();  // minSdkVersion=17+
+            Log.i(TAG, "displayName  = " + displayName);
+        }
 // display size in pixels
         Point size = new Point();
         display.getSize(size);
@@ -41,7 +43,7 @@ public class ConfigurationUtil {
 
 // pixels, dpi
         DisplayMetrics metrics = new DisplayMetrics();
-        ((WindowManager)context.getSystemService(context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(metrics);
+        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(metrics);
         int heightPixels = metrics.heightPixels;
         int widthPixels = metrics.widthPixels;
         int densityDpi = metrics.densityDpi;

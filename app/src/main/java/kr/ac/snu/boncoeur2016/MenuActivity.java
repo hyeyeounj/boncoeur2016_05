@@ -6,8 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-import org.w3c.dom.NameList;
-
 /**
  * Created by hyes on 2016. 4. 25..
  */
@@ -36,6 +34,4 @@ public class MenuActivity extends AppCompatActivity {
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
-
-
 }

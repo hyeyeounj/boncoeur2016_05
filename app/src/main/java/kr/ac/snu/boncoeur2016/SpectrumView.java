@@ -84,7 +84,7 @@ public class SpectrumView extends View {
 //        super.onDraw(canvas);
 
         if (plot != null) {
-            canvas.drawLine((float) Math.random() * getMeasuredWidth(), (float) Math.random() * getMeasuredHeight(), (float) Math.random() * getMeasuredWidth(), (float) Math.random() * getMeasuredHeight(), mStrokePaint);
+//            canvas.drawLine((float) Math.random() * getMeasuredWidth(), (float) Math.random() * getMeasuredHeight(), (float) Math.random() * getMeasuredWidth(), (float) Math.random() * getMeasuredHeight(), mStrokePaint);
 //            canvas.drawLines(plot, mStrokePaint);
 //            canvas.drawLines(borders, mStrokePaint);
         }

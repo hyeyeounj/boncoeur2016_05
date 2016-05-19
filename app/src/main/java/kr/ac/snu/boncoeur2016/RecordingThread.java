@@ -124,9 +124,8 @@ public class RecordingThread {
         }
 //        byte audioData[] = new byte[bufferSize];
 //        short[] audioBuffer = new short[bufferSize / 8];
-        short[] audioBuffer = new short[Define.SAMPLE_RATE / 15];
+        short[] audioBuffer = new short[Define.SAMPLE_RATE / 30];
         int drawBuffer = Define.SAMPLE_RATE / 60;
-        long curTime = 0;
 //        short[] audioBuffer = new short[bufferSize * 2 ];
 
         AudioRecord record = new AudioRecord(MediaRecorder.AudioSource.MIC,
@@ -241,7 +240,6 @@ public class RecordingThread {
                     nRead = record.read(audioBuffer, numberOfShort, audioBuffer.length - numberOfShort);
                 mListener.onAudioDataReceived(audioBuffer, numberOfShort, nRead);
 //                Log.i("RecordingThread", "Drawing Time : " + (int) (System.currentTimeMillis() - curTime));
-                curTime = System.currentTimeMillis();
                 numberOfShort += nRead;
                 if (mNowSaving)
                     ra.record_btn.setCurrentPercentage(50000.0 * (totalBytesRead + numberOfShort) / (Define.SAMPLE_RATE * Define.SHORT_TIME));
@@ -281,9 +279,9 @@ public class RecordingThread {
                                 }
                                 processed += size;
                                 codec.queueInputBuffer(ind, 0, size, (long) presentationTimeUs, 0);
-                                Log.i("RecordingThread", "totalBytesRead : " + totalBytesRead);
-                                presentationTimeUs = 1000000L * (totalBytesRead / 2) / Define.SAMPLE_RATE;
+                                Log.i("RecordingThread", "totalBytesRead : " + totalBytesRead + ", timestampUs : " + presentationTimeUs);
                                 totalBytesRead += size;
+                                presentationTimeUs = 1000000L * (totalBytesRead / 2) / Define.SAMPLE_RATE;
 
                                 if (processed != total)
                                     ind = codec.dequeueInputBuffer(0);
@@ -389,6 +387,11 @@ public class RecordingThread {
         //39=MediaCodecInfo.CodecProfileLevel.AACObjectELD;
         int freqIdx = 11;  //4 for 44.1KHz, 11 for 8000Hz
         int chanCfg = 1;  //CPE
+
+        if (Define.COMPRESSED_AUDIO_SAMPLE_RATE == 8000)
+            freqIdx = 11;
+        else if (Define.COMPRESSED_AUDIO_SAMPLE_RATE == 16000)
+            freqIdx = 8;
 
         // fill in ADTS data
         packet[0] = (byte) 0xFF;

@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -18,9 +17,9 @@ import java.util.ArrayList;
  */
 public class NameListActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
+    private final Handler handler = new Handler();
     private ArrayList<NameItem> nameList;
     private ListView listView;
-    private TextView tv, empty;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +34,6 @@ public class NameListActivity extends AppCompatActivity implements AdapterView.O
         super.onResume();
         refreshData();
     }
-
 
     private void listView(){
         Dao dao = new Dao(getApplicationContext());
@@ -52,8 +50,6 @@ public class NameListActivity extends AppCompatActivity implements AdapterView.O
         listView.setAdapter(nameAdapter);
         listView.setOnItemClickListener(this);
     }
-
-    private final Handler handler = new Handler();
 
     private void refreshData(){
         new Thread(){
